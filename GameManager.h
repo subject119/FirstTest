@@ -10,8 +10,10 @@ class IOManager;
 class GameManager : public cocos2d::Layer
 {
 public:
+    virtual ~GameManager() {}
+
     static cocos2d::Scene* scene();
-    bool GameManager::init();
+    virtual bool init();
 
     CREATE_FUNC(GameManager);
 

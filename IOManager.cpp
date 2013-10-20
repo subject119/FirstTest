@@ -1,39 +1,77 @@
 #include "IOManager.h"
+#include "GameManager.h"
+#include "SolveWizard.h"
+#include "Map.h"
+#include "Cell.h"
+
+USING_NS_CC;
+
+bool IOManager::init()
+{
+    if ( !Layer::init() )
+    {
+        return false;
+    }
+
+    this->setTouchEnabled(true);
+    this->setTouchMode(Touch::DispatchMode::ONE_BY_ONE);
+}
 
 MapData* IOManager::GetMapData()
 {
     mapData = new MapData();
-    mapData->height = 5;
-    mapData->width = 5;
+    mapData->height = 4;
+    mapData->width = 4;
     return mapData;
 }
 
-void IOManager::KeyboardInputRun()
+bool IOManager::onTouchBegan(Touch* touch, Event  *event)
 {
-    int* swapRequest = new int[4];
-    while (true)
+    Point mapCoord = this->gameManager->map->convertTouchToNodeSpace(touch);
+    this->selectedCell = NULL;
+    
+    int height = this->gameManager->map->GetHeight();
+    int width = this->gameManager->map->GetWidth();
+    for (int row = 0; row < height; row++)
     {
-        std::cout << ("////////////////////////////////////////");
-        std::cout << ("// IOManager waiting for new input:");
-        std::cout << ("// Imput format:");
-        std::cout << ("// 0,0 0,1");
-        std::cout << ("////////////////////////////////////////");
-        std::string input;
-        std::cin >> input;
-        std::cout << ("Input read: " + input);
-        ParseInput(input, swapRequest);
-        if (swapRequest != NULL)
+        for (int col = 0; col < width; col++)
         {
-            //gameManager->solveWizard->SwapCells(swapRequest);
+            if (this->gameManager->map->cells[row][col]->getBoundingBox().containsPoint(mapCoord))
+            {
+                this->selectedCell = this->gameManager->map->cells[row][col];
+                break;
+            }
         }
+        if (this->selectedCell != NULL) break;
     }
+    
+    return true;
 }
 
-void IOManager::ParseInput(std::string input, int *swapRequest)
+void IOManager::onTouchEnded(Touch* touch, Event  *event)
 {
-    swapRequest[0] = input[0];
-    swapRequest[1] = input[1];
-    swapRequest[2] = input[2];
-    swapRequest[3] = input[3];
-    std::cout << "Succesfully parsed: " << swapRequest[0] << "," << swapRequest[1] << " " << swapRequest[2] << "," << swapRequest[3];
+    if (this->selectedCell == NULL) return;
+
+    Cell *targetCell = NULL;
+
+    Point mapCoord = this->gameManager->map->convertTouchToNodeSpace(touch);
+    int height = this->gameManager->map->GetHeight();
+    int width = this->gameManager->map->GetWidth();
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            if (this->gameManager->map->cells[i][j]->getBoundingBox().containsPoint(mapCoord))
+            {
+                targetCell = this->gameManager->map->cells[i][j];
+                break;
+            }
+        }
+        if (targetCell != NULL) break;
+    }
+
+    if (targetCell != NULL)
+    {
+        this->gameManager->solveWizard->SolveAction(*this->selectedCell, *targetCell);
+    }
 }

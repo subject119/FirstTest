@@ -13,24 +13,25 @@ enum class CellType : int8_t
 
 enum class GemColor : int8_t 
 {
-    Vacant,
-    Red,
-    Green,
-    Blue,
-    White,
-    Yellow,
-    Purple,
-    Orange
+    Vacant = 0,
+    Red = 1,
+    Green = 2,
+    Blue = 3,
+    Yellow = 4,
+    Purple = 5,
+    Orange = 6
 };
 
 class Cell : public cocos2d::Sprite
 {
 public:
-    void init(int r, int c, CellType t);
+    virtual ~Cell() {}
 
-    static Cell* create();
+    void init(const int r, const int c, const CellType t);
 
-    void SetColor(GemColor color);
+    static Cell* createWithTexture(cocos2d::Texture2D *texture);
+
+    void SetColor(const GemColor color);
     GemColor GetColor();
 
     CellType type;
@@ -38,10 +39,12 @@ public:
     int col;
     bool resolving;
 
+    static cocos2d::CCTexture2D* ChooseTextureByColor(const GemColor color);
+    static GemColor Cell::RandomColor();
+    static void Cell::CacheCellTexture();
+
 private:
     GemColor color;
-    cocos2d::CCTexture2D* ChooseTextureByColor(GemColor color);
-
 };
 
 #endif

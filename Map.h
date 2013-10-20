@@ -11,20 +11,26 @@ class MapData;
 class Map : public cocos2d::Layer
 {
 public:
+    virtual ~Map() {}
+
+    virtual bool init();
+
     GameManager *gameManager;
 
-    int height;
-    int width;
+    int GetHeight();
+    int GetWidth();
 
     Cell ***cells;
 
-    ///////////////////////////////////////////////////
+    CREATE_FUNC(Map);
+
+    /////////////////////////////////////////////////////////////
     // Neighbor cells on different directions
-    //     _1_ 
-    //  6 /   \ 2
-    //  5 \___/ 3
-    //      4
-    ///////////////////////////////////////////////////
+    //     _1_                              _4_
+    //  6 /   \ 2 (windows form app)     5 /   \ 3 (phone app)
+    //  5 \___/ 3                        6 \___/ 2
+    //      4                                1
+    /////////////////////////////////////////////////////////////
     Cell* Neighbor(const Cell &cell, const int num);
 
     bool isNeighbor(const Cell &cellA, const Cell &cellB);
@@ -33,9 +39,16 @@ public:
 
     void Draw();
 
-    GemColor RandomColor();
+    static bool Map::IsOdd(const int num);
+
+    static void Map::SimAnimation();
+
+    void AutoResolve();
 
 private:
+    int height;
+    int width;
+
     Cell* N1(const Cell &cell);
     Cell* N2(const Cell &cell);
     Cell* N3(const Cell &cell);
@@ -45,8 +58,6 @@ private:
 
     void InitializeMap(const MapData &mapData);
     void InitializeColor();
-    void AutoResolve();
-    
 };
 
 #endif

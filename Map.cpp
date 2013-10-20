@@ -3,6 +3,17 @@
 #include "SolveWizard.h"
 #include "IOManager.h"
 
+USING_NS_CC;
+
+bool Map::init()
+{
+    if ( !Layer::init() )
+    {
+        return false;
+    }
+}
+
+
 Cell* Map::Neighbor(const Cell &cell, const int num)
 {
     switch (num){
@@ -45,7 +56,7 @@ Cell* Map::N1(const Cell &cell)
 Cell* Map::N2(const Cell &cell)
 {
     // even column
-    if ((cell.col & 1) == 0)
+    if (!IsOdd(cell.col))
     {
         if (cell.row > 0 && cell.col < this->width - 1)
         {
@@ -67,7 +78,7 @@ Cell* Map::N2(const Cell &cell)
 Cell* Map::N3(const Cell &cell)
 {
     // even column
-    if ((cell.col & 1) == 0)
+    if (!IsOdd(cell.col))
     {
         if (cell.col < this->width - 1)
         {
@@ -98,7 +109,7 @@ Cell* Map::N4(const Cell &cell)
 Cell* Map::N5(const Cell &cell)
 {
     // even column
-    if ((cell.col & 1) == 0)
+    if (!IsOdd(cell.col))
     {
         if (cell.col > 0)
         {
@@ -120,7 +131,7 @@ Cell* Map::N5(const Cell &cell)
 Cell* Map::N6(const Cell &cell)
 {
     // even column
-    if ((cell.col & 1) == 0)
+    if (!IsOdd(cell.col))
     {
         if (cell.row > 0 && cell.col > 0)
         {
@@ -160,14 +171,15 @@ void Map::InitializeMap(const MapData &mapData)
     {
         for (int j = 0; j < width; j++)
         {
-            cells[i][j] = Cell::create();
+            cells[i][j] = Cell::createWithTexture(Cell::ChooseTextureByColor(GemColor::Vacant));
             cells[i][j]->init(i, j, CellType::Inspace);
             
-            int X = j * 37;
-            int Y = i * 46;
-            if (j & 1 == 0) 
+            double X = 18.75 * j;
+            double Y = 21.6506351 * i;
+            if (IsOdd(j))
             {
-                Y += 23;
+                // if it is odd column, move cells up
+                Y += 12.0;
             }
             cells[i][j]->setPositionX(X);
             cells[i][j]->setPositionY(Y);
@@ -186,7 +198,7 @@ void Map::InitializeColor()
         {
             if (cells[i][j]->type == CellType::Inspace)
             {
-                cells[i][j]->SetColor(RandomColor());
+                cells[i][j]->SetColor(Cell::RandomColor());
                 cells[i][j]->resolving = false;
             }
         }
@@ -195,14 +207,30 @@ void Map::InitializeColor()
 
 void Map::AutoResolve()
 {
+    this->gameManager->solveWizard->Refill(4);
     while (this->gameManager->solveWizard->Solve() != 0)
     {
-        this->gameManager->solveWizard->Refill();
+        SimAnimation();
+        this->gameManager->solveWizard->Refill(4);
     }
 }
 
-GemColor Map::RandomColor()
+int Map::GetHeight()
 {
-    return (GemColor)(rand() % (8 - 1));
+    return this->height;
 }
 
+int Map::GetWidth()
+{
+    return this->width;
+}
+
+bool Map::IsOdd(const int num)
+{
+    return ((num & 1) == 1);
+}
+
+void Map::SimAnimation()
+{
+    Sleep(0);
+}

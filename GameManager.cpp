@@ -6,6 +6,7 @@
 #include "..\proj.win32\Map.h"
 #include "..\proj.win32\SolveWizard.h"
 #include "..\proj.win32\IOManager.h"
+#include "..\proj.win32\Cell.h"
 
 USING_NS_CC;
 
@@ -13,10 +14,8 @@ Scene* GameManager::scene()
 {
     // 'scene' is an autorelease object
     auto scene = Scene::create();
-    GameManager *gameManagerlayer = GameManager::create();
+    auto *gameManagerlayer = GameManager::create();
     scene->addChild(gameManagerlayer);
-    scene->addChild(gameManagerlayer->map);
-    gameManagerlayer->map->Reset(*(gameManagerlayer->iOManager->GetMapData()));
 
     return scene;
 }
@@ -32,11 +31,19 @@ bool GameManager::init()
     auto visibleSize = Director::getInstance()->getVisibleSize();
     auto origin = Director::getInstance()->getVisibleOrigin();
 
-    map = new Map();
-    map->gameManager = this;
-    solveWizard = new SolveWizard();
-    solveWizard->gameManager = this;
-    iOManager = new IOManager();
+    this->map = Map::create();
+    this->map->gameManager = this;
+    this->iOManager = IOManager::create();
+    this->iOManager->gameManager = this;
+    this->solveWizard = new SolveWizard();
+    this->solveWizard->gameManager = this;
+
+    this->addChild(this->map);
+    this->addChild(this->iOManager);
+
+    Cell::CacheCellTexture();
+    this->map->setPosition(Point::ZERO + origin + Point(150,60));
+    this->map->Reset(*(this->iOManager->GetMapData()));    
 
     return true;
 }

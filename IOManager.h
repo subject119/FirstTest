@@ -3,6 +3,9 @@
 
 #include "cocos2d.h"
 
+class GameManager;
+class Cell;
+
 class MapData
 {
 public:
@@ -14,13 +17,22 @@ public:
 class IOManager : public cocos2d::Layer
 {
 public:
+    GameManager *gameManager;
+
+    virtual ~IOManager() {}
+
+    CREATE_FUNC(IOManager);
+
+    Cell *selectedCell;
+
+    virtual bool init();
+
     MapData *mapData;
 
     MapData *GetMapData();
 
-    void KeyboardInputRun();
-
-    void ParseInput(std::string input, int *swapRequest);
+    virtual bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event  *event);
+    virtual void onTouchEnded(cocos2d::Touch* touch, cocos2d::Event  *event);
 };
 
 #endif
