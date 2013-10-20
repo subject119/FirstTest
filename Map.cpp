@@ -160,7 +160,20 @@ void Map::InitializeMap(const MapData &mapData)
     {
         for (int j = 0; j < width; j++)
         {
-            cells[i][j] = new Cell(i, j, CellType::Inspace);
+            cells[i][j] = Cell::create();
+            cells[i][j]->init(i, j, CellType::Inspace);
+            
+            int X = j * 37;
+            int Y = i * 46;
+            if (j & 1 == 0) 
+            {
+                Y += 23;
+            }
+            cells[i][j]->setPositionX(X);
+            cells[i][j]->setPositionY(Y);
+
+            // Don't forget to add Sprites to Layer, otherwise later app crashes when doing clean up
+            this->addChild(cells[i][j]);
         }
     }
 }
@@ -173,7 +186,7 @@ void Map::InitializeColor()
         {
             if (cells[i][j]->type == CellType::Inspace)
             {
-                cells[i][j]->color = RandomColor();
+                cells[i][j]->SetColor(RandomColor());
                 cells[i][j]->resolving = false;
             }
         }
@@ -190,52 +203,6 @@ void Map::AutoResolve()
 
 GemColor Map::RandomColor()
 {
-    return (GemColor)(rand() % (sizeof(GemColor)/sizeof(int8_t) - 1));
+    return (GemColor)(rand() % (8 - 1));
 }
 
-void Map::Draw()
-{
-    //Graphics g = e.Graphics;
-
-    //for (int i = 0; i < height; i++)
-    //{
-    //    bool offset = false;
-    //    System.Console.WriteLine("");
-    //    for (int j = 0; j < width; j++)
-    //    {
-    //        // TODO: temp code to put pics into correct location
-    //        // pic size 50 * 46
-    //        Image newImage = ChooseImageByColor(cells[i, j].color);
-    //        int X = j * 37;
-    //        int Y = i * 46;
-    //        if (offset) Y += 23;
-    //        offset = !offset;
-    //        g.DrawImage(newImage, X, Y);
-    //    }
-    //}
-}
-
-void Map::ChooseImageByColor(GemColor color)
-{
-    //switch (color)
-    //{
-    //case GemColor::Red:
-    //    return Properties.Resources.r;
-    //case GemColor::Green:
-    //    return Properties.Resources.g;
-    //case GemColor::Blue:
-    //    return Properties.Resources.b;
-    //case GemColor::Vacant:
-    //    return Properties.Resources.v;
-    //case GemColor::Purple:
-    //    return Properties.Resources.p;
-    //case GemColor::White:
-    //    return Properties.Resources.w;
-    //case GemColor::Orange:
-    //    return Properties.Resources.o;
-    //case GemColor::Yellow:
-    //    return Properties.Resources.y;
-    //default:
-    //    return NULL;
-    //}
-}

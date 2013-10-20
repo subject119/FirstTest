@@ -26,13 +26,22 @@ enum class GemColor : int8_t
 class Cell : public cocos2d::Sprite
 {
 public:
-    GemColor color;
+    void init(int r, int c, CellType t);
+
+    static Cell* create();
+
+    void SetColor(GemColor color);
+    GemColor GetColor();
+
     CellType type;
     int row;
     int col;
     bool resolving;
 
-    Cell(int r, int c, CellType t);
+private:
+    GemColor color;
+    cocos2d::CCTexture2D* ChooseTextureByColor(GemColor color);
+
 };
 
 #endif

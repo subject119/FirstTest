@@ -13,9 +13,10 @@ Scene* GameManager::scene()
 {
     // 'scene' is an autorelease object
     auto scene = Scene::create();
-    
-    auto *ioLayer = IOManager::create();
-    scene->addChild(ioLayer);
+    GameManager *gameManagerlayer = GameManager::create();
+    scene->addChild(gameManagerlayer);
+    scene->addChild(gameManagerlayer->map);
+    gameManagerlayer->map->Reset(*(gameManagerlayer->iOManager->GetMapData()));
 
     return scene;
 }
@@ -23,10 +24,19 @@ Scene* GameManager::scene()
 // on "init" you need to initialize your instance
 bool GameManager::init()
 {
+    if ( !Layer::init() )
+    {
+        return false;
+    }
+    
+    auto visibleSize = Director::getInstance()->getVisibleSize();
+    auto origin = Director::getInstance()->getVisibleOrigin();
+
     map = new Map();
     map->gameManager = this;
     solveWizard = new SolveWizard();
     solveWizard->gameManager = this;
-    
+    iOManager = new IOManager();
+
     return true;
 }

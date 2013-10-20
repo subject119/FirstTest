@@ -1,13 +1,14 @@
 #ifndef __MAP_H__
 #define __MAP_H__
 
+#include "cocos2d.h"
+
 #include "Cell.h"
-#include <array>
 
 class GameManager;
 class MapData;
 
-class Map
+class Map : public cocos2d::Layer
 {
 public:
     GameManager *gameManager;
@@ -45,7 +46,7 @@ private:
     void InitializeMap(const MapData &mapData);
     void InitializeColor();
     void AutoResolve();
-    void ChooseImageByColor(GemColor color);
+    
 };
 
 #endif

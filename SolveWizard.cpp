@@ -9,15 +9,15 @@ int SolveWizard::SwapCells(const int* swapRequest)
     Cell *cellB = this->gameManager->map->cells[swapRequest[2]][swapRequest[3]];
     if (this->gameManager->map->isNeighbor(*cellA, *cellB))
     {
-        GemColor temp = cellA->color;
-        cellA->color = cellB->color;
-        cellB->color = temp;
+        GemColor temp = cellA->GetColor();
+        cellA->SetColor(cellB->GetColor());
+        cellB->SetColor(temp);
         resolved = Solve();
         if (resolved == 0)
         {
             // if swap doesn't have effect, swap cells back
-            cellB->color = cellA->color;
-            cellA->color = temp;
+            cellB->SetColor(cellA->GetColor());
+            cellA->SetColor(temp);
         }
     }
     return resolved;
@@ -25,9 +25,9 @@ int SolveWizard::SwapCells(const int* swapRequest)
 
 int SolveWizard::Solve()
 {
-    MarkResolvableByDirection(2);
-    MarkResolvableByDirection(3);
-    MarkResolvableByDirection(4);
+    //MarkResolvableByDirection(2);
+    //MarkResolvableByDirection(3);
+    //MarkResolvableByDirection(4);
     return Resolve();
 }
 
@@ -43,7 +43,7 @@ int SolveWizard::Resolve()
             Cell* cell = this->gameManager->map->cells[i][j];
             if (cell->resolving == true)
             {
-                cell->color = GemColor::Vacant;
+                cell->SetColor(GemColor::Vacant);
                 totalResolved++;
             }
             cell->resolving = false;
@@ -118,7 +118,7 @@ void SolveWizard::MarkResolvableByDirection(const int dir)
         int len = 0;
         while (end != NULL && end->type != CellType::Outspace)
         {
-            if (begin->color == end->color)
+            if (begin->GetColor() == end->GetColor())
             {
                 end = this->gameManager->map->Neighbor(*end, dir);
                 ++len;
@@ -127,7 +127,7 @@ void SolveWizard::MarkResolvableByDirection(const int dir)
             {
                 if (len > 2)
                 {
-                    while (begin->color != end->color)
+                    while (begin->GetColor() != end->GetColor())
                     {
                         begin->resolving = true;
                         begin = this->gameManager->map->Neighbor(*begin, dir);
@@ -158,13 +158,13 @@ void SolveWizard::Refill()
             if (this->gameManager->map->cells[row][col]->resolving == true)
             {
                 Cell *upCell = this->gameManager->map->Neighbor(*cell, 1);
-                if (upCell != NULL && upCell->color != GemColor::Vacant)
+                if (upCell != NULL && upCell->GetColor() != GemColor::Vacant)
                 {
-                    cell->color = upCell->color;
+                    cell->SetColor(upCell->GetColor());
                 }
                 else
                 {
-                    cell->color = this->gameManager->map->RandomColor();
+                    cell->SetColor(this->gameManager->map->RandomColor());
                 }
                 cell->resolving = false;
             }
@@ -177,18 +177,18 @@ void SolveWizard::Refill()
         Cell *newPos = pos;
         while (pos != NULL && newPos != NULL)
         {
-            if (pos->color != GemColor::Vacant)
+            if (pos->GetColor() != GemColor::Vacant)
             {
                 pos = this->gameManager->map->Neighbor(*pos, 1);
                 newPos = pos;
                 continue;
             }
 
-            if (newPos->color != GemColor::Vacant)
+            if (newPos->GetColor() != GemColor::Vacant)
             {
-                pos->color = newPos->color;
+                pos->SetColor(newPos->GetColor());
                 pos = this->gameManager->map->Neighbor(*pos, 1);
-                newPos->color = GemColor::Vacant;
+                newPos->SetColor(GemColor::Vacant);
                 newPos = this->gameManager->map->Neighbor(*newPos, 1);
             }
             else
@@ -198,7 +198,7 @@ void SolveWizard::Refill()
         }
         while (pos != NULL)
         {
-            pos->color = this->gameManager->map->RandomColor();
+            pos->SetColor(this->gameManager->map->RandomColor());
             pos = this->gameManager->map->Neighbor(*pos, 1);
         }
     }
