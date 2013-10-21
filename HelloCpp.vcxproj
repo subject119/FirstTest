@@ -123,23 +123,23 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Classes\AppDelegate.cpp" />
-    <ClCompile Include="..\Classes\HelloWorldScene.cpp" />
     <ClCompile Include="Cell.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="IOManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
+    <ClCompile Include="ScoreManager.cpp" />
     <ClCompile Include="SolveWizard.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Classes\AppDelegate.h" />
     <ClInclude Include="..\Classes\AppMacros.h" />
-    <ClInclude Include="..\Classes\HelloWorldScene.h" />
     <ClInclude Include="Cell.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="IOManager.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="Map.h" />
+    <ClInclude Include="ScoreManager.h" />
     <ClInclude Include="SolveWizard.h" />
   </ItemGroup>
   <ItemGroup>

@@ -40,8 +40,8 @@ public:
     bool resolving;
 
     static cocos2d::CCTexture2D* ChooseTextureByColor(const GemColor color);
-    static GemColor Cell::RandomColor();
-    static void Cell::CacheCellTexture();
+    static GemColor RandomColor();
+    static void CacheCellTexture();
 
 private:
     GemColor color;

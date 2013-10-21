@@ -154,7 +154,7 @@ void Map::Reset(const MapData &mapData)
 {
     InitializeMap(mapData);
     InitializeColor();
-    AutoResolve();
+    this->gameManager->solveWizard->AutoResolve();
 }
 
 void Map::InitializeMap(const MapData &mapData)
@@ -205,16 +205,6 @@ void Map::InitializeColor()
     }
 }
 
-void Map::AutoResolve()
-{
-    this->gameManager->solveWizard->Refill(4);
-    while (this->gameManager->solveWizard->Solve() != 0)
-    {
-        SimAnimation();
-        this->gameManager->solveWizard->Refill(4);
-    }
-}
-
 int Map::GetHeight()
 {
     return this->height;
@@ -228,9 +218,4 @@ int Map::GetWidth()
 bool Map::IsOdd(const int num)
 {
     return ((num & 1) == 1);
-}
-
-void Map::SimAnimation()
-{
-    Sleep(0);
 }

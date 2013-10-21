@@ -7,6 +7,7 @@
 #include "..\proj.win32\SolveWizard.h"
 #include "..\proj.win32\IOManager.h"
 #include "..\proj.win32\Cell.h"
+#include "..\proj.win32\ScoreManager.h"
 
 USING_NS_CC;
 
@@ -37,6 +38,8 @@ bool GameManager::init()
     this->iOManager->gameManager = this;
     this->solveWizard = new SolveWizard();
     this->solveWizard->gameManager = this;
+    this->scoreManager = new ScoreManager();
+    this->scoreManager->gameManager = this;
 
     this->addChild(this->map);
     this->addChild(this->iOManager);

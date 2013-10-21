@@ -10,19 +10,23 @@ class SolveWizard
 public:
     GameManager *gameManager;
 
-    int SolveWizard::SwapCells(Cell &cellA, Cell &cellB);
+    void SolveBySwap(Cell &cellA, Cell &cellB);
 
-    int Solve();
+    void AutoResolve();
+
+private:
 
     int Resolve();
 
-    void SolveWizard::GenerateHeads(const int dir, std::vector<Cell*> &heads);
+    void GenerateHeads(const int dir, std::vector<Cell*> &heads);
 
     void MarkResolvableByDirection(const int dir);
 
-    void Refill(const int dir);
+    int SwapCells(Cell &cellA, Cell &cellB);
 
-    void SolveWizard::SolveAction(Cell &cellA, Cell &cellB);
+    int Solve();
+
+    void Refill(const int dir);
 };
 
 #endif

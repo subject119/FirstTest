@@ -6,6 +6,7 @@
 class Map;
 class SolveWizard;
 class IOManager;
+class ScoreManager;
 
 class GameManager : public cocos2d::Layer
 {
@@ -20,6 +21,7 @@ public:
     Map *map;
     SolveWizard *solveWizard;
     IOManager *iOManager;
+    ScoreManager *scoreManager;
 };
 
 #endif // __GAMEMANAGER_SCENE_H__

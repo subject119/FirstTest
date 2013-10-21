@@ -1,11 +1,12 @@
 #include "SolveWizard.h"
 #include "GameManager.h"
+#include "ScoreManager.h"
 #include "Map.h"
 
-void SolveWizard::SolveAction(Cell &cellA, Cell &cellB)
+void SolveWizard::SolveBySwap(Cell &cellA, Cell &cellB)
 {
     int resolved = SwapCells(cellA, cellB);
-    if (resolved > 0) this->gameManager->map->AutoResolve();
+    if (resolved > 0) AutoResolve();
 }
 
 int SolveWizard::SwapCells(Cell &cellA, Cell &cellB)
@@ -16,7 +17,6 @@ int SolveWizard::SwapCells(Cell &cellA, Cell &cellB)
         GemColor temp = cellA.GetColor();
         cellA.SetColor(cellB.GetColor());
         cellB.SetColor(temp);
-        Map::SimAnimation();
         resolved = Solve();
         if (resolved == 0)
         {
@@ -33,7 +33,9 @@ int SolveWizard::Solve()
     MarkResolvableByDirection(2);
     MarkResolvableByDirection(3);
     MarkResolvableByDirection(4);
-    return Resolve();
+    int resolved = Resolve();
+    this->gameManager->scoreManager->CalcScore(resolved);
+    return resolved;
 }
 
 int SolveWizard::Resolve()
@@ -183,5 +185,14 @@ void SolveWizard::Refill(const int dir)
             pos->SetColor(Cell::RandomColor());
             pos = this->gameManager->map->Neighbor(*pos, dir);
         }
+    }
+}
+
+void SolveWizard::AutoResolve()
+{
+    this->gameManager->solveWizard->Refill(4);
+    while (this->gameManager->solveWizard->Solve() != 0)
+    {
+        this->gameManager->solveWizard->Refill(4);
     }
 }

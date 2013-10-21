@@ -39,11 +39,7 @@ public:
 
     void Draw();
 
-    static bool Map::IsOdd(const int num);
-
-    static void Map::SimAnimation();
-
-    void AutoResolve();
+    static bool IsOdd(const int num);
 
 private:
     int height;

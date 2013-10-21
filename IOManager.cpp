@@ -20,8 +20,8 @@ bool IOManager::init()
 MapData* IOManager::GetMapData()
 {
     mapData = new MapData();
-    mapData->height = 4;
-    mapData->width = 4;
+    mapData->height = 9;
+    mapData->width = 9;
     return mapData;
 }
 
@@ -72,6 +72,6 @@ void IOManager::onTouchEnded(Touch* touch, Event  *event)
 
     if (targetCell != NULL)
     {
-        this->gameManager->solveWizard->SolveAction(*this->selectedCell, *targetCell);
+        this->gameManager->solveWizard->SolveBySwap(*this->selectedCell, *targetCell);
     }
 }
