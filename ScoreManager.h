@@ -11,10 +11,16 @@ public:
 
     GameManager *gameManager;
 
-    int CalcScore(const int numResolved);
+    void AddToScore(const int numResolved);
+    int GetScore();
+
+    void StartRecording();
+
+    void StopRecording();
 
 private:
     int score;
+    bool recording;
 };
 
 #endif

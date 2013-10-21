@@ -2,6 +2,7 @@
 #include "GameManager.h"
 #include "ScoreManager.h"
 #include "Map.h"
+#include "UIManager.h"
 
 void SolveWizard::SolveBySwap(Cell &cellA, Cell &cellB)
 {
@@ -34,7 +35,8 @@ int SolveWizard::Solve()
     MarkResolvableByDirection(3);
     MarkResolvableByDirection(4);
     int resolved = Resolve();
-    this->gameManager->scoreManager->CalcScore(resolved);
+    this->gameManager->scoreManager->AddToScore(resolved);
+    this->gameManager->UIManager->SetScore(this->gameManager->scoreManager->GetScore());
     return resolved;
 }
 
