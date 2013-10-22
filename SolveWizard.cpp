@@ -14,27 +14,20 @@ SolveWizard::SolveWizard()
 
 void SolveWizard::SolveBySwap(Cell &cellA, Cell &cellB)
 {
-    int resolved = SwapCells(cellA, cellB);
-    if (resolved > 0) AutoResolve();
-}
-
-int SolveWizard::SwapCells(Cell &cellA, Cell &cellB)
-{
-    int resolved = 0;
+    bool resolved = false;
     if (this->gameManager->map->isNeighbor(cellA, cellB))
     {
         GemColor temp = cellA.GetColor();
         cellA.SetColor(cellB.GetColor());
         cellB.SetColor(temp);
-        resolved = Solve();
-        if (resolved == 0)
+        resolved = AutoResolve();
+        if (!resolved)
         {
             // if swap doesn't have effect, swap cells back
             cellB.SetColor(cellA.GetColor());
             cellA.SetColor(temp);
         }
     }
-    return resolved;
 }
 
 int SolveWizard::Solve()
@@ -73,46 +66,46 @@ void SolveWizard::GenerateHeads(const int dir, std::vector<Cell*> &heads)
 {
     switch (dir)
     {
-        case 2:
+    case 2:
+        {
+            int i = 0;
+            for (; i < this->gameManager->map->GetHeight(); i++)
             {
-                int i = 0;
-                for (; i < this->gameManager->map->GetHeight(); i++)
-                {
-                    heads.push_back(this->gameManager->map->cells[i][0]);
-                }
-                for (int j = 0; j < this->gameManager->map->GetWidth(); j++)
-                {
-                    if ((j & 1) == 1)
-                    {
-                        heads.push_back(this->gameManager->map->cells[this->gameManager->map->GetHeight() - 1][j]);
-                    }
-                }
-                break;
+                heads.push_back(this->gameManager->map->cells[i][0]);
             }
-        case 3:
+            for (int j = 0; j < this->gameManager->map->GetWidth(); j++)
             {
-                int i = 0;
-                for (; i < this->gameManager->map->GetHeight(); i++)
+                if ((j & 1) == 1)
                 {
-                    heads.push_back(this->gameManager->map->cells[i][0]);
+                    heads.push_back(this->gameManager->map->cells[this->gameManager->map->GetHeight() - 1][j]);
                 }
-                for (int j = 0; j < this->gameManager->map->GetWidth(); j++)
-                {
-                    if ((j & 1) == 0)
-                    {
-                        heads.push_back(this->gameManager->map->cells[0][j]);
-                    }
-                }
-                break;
             }
-        case 4:
+            break;
+        }
+    case 3:
+        {
+            int i = 0;
+            for (; i < this->gameManager->map->GetHeight(); i++)
             {
-                for (int i = 0; i < this->gameManager->map->GetWidth(); i++)
-                {
-                    heads.push_back(this->gameManager->map->cells[0][i]);
-                }
-                break;
+                heads.push_back(this->gameManager->map->cells[i][0]);
             }
+            for (int j = 0; j < this->gameManager->map->GetWidth(); j++)
+            {
+                if ((j & 1) == 0)
+                {
+                    heads.push_back(this->gameManager->map->cells[0][j]);
+                }
+            }
+            break;
+        }
+    case 4:
+        {
+            for (int i = 0; i < this->gameManager->map->GetWidth(); i++)
+            {
+                heads.push_back(this->gameManager->map->cells[0][i]);
+            }
+            break;
+        }
     }
 }
 
@@ -179,13 +172,13 @@ void SolveWizard::Refill(const int dir)
 
             // use newPos to find the next non-vacant cell, 
             // pos and newPos move to next cells
-            if (newPos->GetColor() != GemColor::Vacant && !pos->falling)
+            if (newPos->GetColor() != GemColor::Vacant)
             {
                 this->fallingCount++;
                 newPos->falling = true;
                 pos->falling = false;
                 Fall(newPos, pos, offset);
-                
+
                 pos = this->gameManager->map->Neighbor(*pos, dir);
                 newPos = this->gameManager->map->Neighbor(*newPos, dir);
             }
@@ -243,7 +236,8 @@ void SolveWizard::SchedResolve(float dt)
         // cells are still falling, keep wait
         return;
     }
-    if (this->gameManager->solveWizard->Solve() == 0) {
+    if (this->gameManager->solveWizard->Solve() == 0) 
+    {
         // stop scheduler
         this->unschedule(schedule_selector(SolveWizard::SchedResolve));
     }
@@ -253,11 +247,12 @@ void SolveWizard::SchedResolve(float dt)
     }
 }
 
-void SolveWizard::AutoResolve()
+bool SolveWizard::AutoResolve()
 {
-    this->gameManager->solveWizard->Solve();
+    if (this->gameManager->solveWizard->Solve() == 0) return false;
     this->gameManager->solveWizard->Refill(4);
     // start auto resolving
     const float deltaTime = 0.5;
     this->schedule(schedule_selector(SolveWizard::SchedResolve), deltaTime);
+    return true;
 }

@@ -17,7 +17,7 @@ public:
 
     void SolveBySwap(Cell &cellA, Cell &cellB);
 
-    void AutoResolve();
+    bool AutoResolve();
 
 private:
     int fallingCount;
@@ -29,8 +29,6 @@ private:
     void GenerateHeads(const int dir, std::vector<Cell*> &heads);
 
     void MarkResolvableByDirection(const int dir);
-
-    int SwapCells(Cell &cellA, Cell &cellB);
 
     int Solve();
 
