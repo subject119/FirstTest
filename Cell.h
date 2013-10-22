@@ -37,7 +37,9 @@ public:
     CellType type;
     int row;
     int col;
+
     bool resolving;
+    bool falling;
 
     static cocos2d::CCTexture2D* ChooseTextureByColor(const GemColor color);
     static GemColor RandomColor();

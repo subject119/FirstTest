@@ -33,7 +33,8 @@ bool GameManager::init()
     auto visibleSize = Director::getInstance()->getVisibleSize();
     auto origin = Director::getInstance()->getVisibleOrigin();
 
-    this->solveWizard = new SolveWizard();
+    this->solveWizard = SolveWizard::create();
+    this->addChild(this->solveWizard);
     this->solveWizard->gameManager = this;
 
     this->scoreManager = new ScoreManager();

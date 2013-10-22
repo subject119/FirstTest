@@ -3,6 +3,14 @@
 #include "ScoreManager.h"
 #include "Map.h"
 #include "UIManager.h"
+#include "Cell.h"
+
+USING_NS_CC;
+
+SolveWizard::SolveWizard()
+{
+    this->fallingCount = 0;
+}
 
 void SolveWizard::SolveBySwap(Cell &cellA, Cell &cellB)
 {
@@ -155,46 +163,101 @@ void SolveWizard::Refill(const int dir)
 {
     for (int col = 0; col < this->gameManager->map->GetWidth(); col++)
     {
+        int offset = 0; // offset == (newPos - pos) * height
         Cell *pos = this->gameManager->map->cells[0][col];
         Cell *newPos = pos;
         while (pos != NULL && newPos != NULL)
         {
-            if (pos->GetColor() != GemColor::Vacant)
+            if (pos->GetColor() != GemColor::Vacant && !pos->falling)
             {
                 pos = this->gameManager->map->Neighbor(*pos, dir);
                 newPos = pos;
                 continue;
             }
-            // now we have find the first upmost vacant cell , pos and newPos are pointing to it
+            // now we have find the first upmost vacant cell
+            // pos and newPos are pointing to it
 
             // use newPos to find the next non-vacant cell, 
             // pos and newPos move to next cells
-            if (newPos->GetColor() != GemColor::Vacant)
+            if (newPos->GetColor() != GemColor::Vacant && !pos->falling)
             {
-                pos->SetColor(newPos->GetColor());
-                newPos->SetColor(GemColor::Vacant);
+                this->fallingCount++;
+                newPos->falling = true;
+                pos->falling = false;
+                Fall(newPos, pos, offset);
+                
                 pos = this->gameManager->map->Neighbor(*pos, dir);
                 newPos = this->gameManager->map->Neighbor(*newPos, dir);
             }
             else
             {
                 newPos = this->gameManager->map->Neighbor(*newPos, dir);
+                offset++;
             }
         }
         // if all upper cells above pos are vacant
         while (pos != NULL)
         {
-            pos->SetColor(Cell::RandomColor());
+            this->fallingCount++;
+            pos->falling = false;
+            Fall(NULL, pos, offset);
             pos = this->gameManager->map->Neighbor(*pos, dir);
         }
     }
 }
 
-void SolveWizard::AutoResolve()
+// Move the Cell up to the start point of falling
+void SolveWizard::Fall(Cell *newPos, Cell *pos, const int offset)
 {
-    this->gameManager->solveWizard->Refill(4);
-    while (this->gameManager->solveWizard->Solve() != 0)
+    Point toPos = pos->getPosition();
+    if (newPos != NULL)
+    {
+        pos->setPosition(newPos->getPosition());
+        pos->SetColor(newPos->GetColor());
+    }
+    else
+    {
+        float Y = pos->getPositionY() + offset * pos->getContentSize().height;
+        Point pNewPos(pos->getPositionX(), Y); 
+        pos->setPosition(pNewPos);
+        pos->SetColor(Cell::RandomColor());
+    }
+    float distY = pos->getPositionY() - toPos.y;
+    float speed = 100;
+    float duration = distY / speed;
+    MoveTo *fall = MoveTo::create(duration, toPos);
+    auto actionFallEnds = CallFunc::create(CC_CALLBACK_0(SolveWizard::ActionFallEnds, this));
+    Sequence *seq = Sequence::create(fall, actionFallEnds, NULL);
+    pos->runAction(seq);
+}
+
+void SolveWizard::ActionFallEnds()
+{
+    this->fallingCount--;
+}
+
+void SolveWizard::SchedResolve(float dt)
+{
+    while (this->gameManager->solveWizard->fallingCount > 0) 
+    {
+        // cells are still falling, keep wait
+        return;
+    }
+    if (this->gameManager->solveWizard->Solve() == 0) {
+        // stop scheduler
+        this->unschedule(schedule_selector(SolveWizard::SchedResolve));
+    }
+    else
     {
         this->gameManager->solveWizard->Refill(4);
     }
+}
+
+void SolveWizard::AutoResolve()
+{
+    this->gameManager->solveWizard->Solve();
+    this->gameManager->solveWizard->Refill(4);
+    // start auto resolving
+    const float deltaTime = 0.5;
+    this->schedule(schedule_selector(SolveWizard::SchedResolve), deltaTime);
 }

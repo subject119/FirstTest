@@ -6,6 +6,7 @@ void Cell::init(const int r, const int c, const CellType t)
 {
     this->color = GemColor::Vacant;
     this->resolving = false;
+    this->falling = false;
     this->type = t;
     this->row = r;
     this->col = c;

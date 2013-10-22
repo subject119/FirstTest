@@ -20,8 +20,8 @@ bool IOManager::init()
 MapData* IOManager::GetMapData()
 {
     mapData = new MapData();
-    mapData->height = 9;
-    mapData->width = 9;
+    mapData->height = 5;
+    mapData->width = 5;
     return mapData;
 }
 
