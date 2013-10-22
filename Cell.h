@@ -35,8 +35,9 @@ public:
     GemColor GetColor();
 
     CellType type;
-    int row;
-    int col;
+
+    int GetRow() const;
+    int GetCol() const;
 
     bool resolving;
     bool falling;
@@ -47,6 +48,8 @@ public:
 
 private:
     GemColor color;
+    int row;
+    int col;
 };
 
 #endif

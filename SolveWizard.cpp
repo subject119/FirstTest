@@ -14,14 +14,17 @@ SolveWizard::SolveWizard()
 
 void SolveWizard::SolveBySwap(Cell &cellA, Cell &cellB)
 {
-    bool resolved = false;
     if (this->gameManager->map->isNeighbor(cellA, cellB))
     {
         GemColor temp = cellA.GetColor();
         cellA.SetColor(cellB.GetColor());
         cellB.SetColor(temp);
-        resolved = AutoResolve();
-        if (!resolved)
+        
+        if (QuickTestSolvable())
+        {
+            AutoResolve();
+        }
+        else
         {
             // if swap doesn't have effect, swap cells back
             cellB.SetColor(cellA.GetColor());
@@ -39,6 +42,11 @@ int SolveWizard::Solve()
     this->gameManager->scoreManager->AddToScore(resolved);
     this->gameManager->UIManager->SetScore(this->gameManager->scoreManager->GetScore());
     return resolved;
+}
+
+bool SolveWizard::QuickTestSolvable()
+{
+    return MarkResolvableByDirection(2) || MarkResolvableByDirection(3) || MarkResolvableByDirection(4);
 }
 
 int SolveWizard::Resolve()
@@ -109,10 +117,11 @@ void SolveWizard::GenerateHeads(const int dir, std::vector<Cell*> &heads)
     }
 }
 
-void SolveWizard::MarkResolvableByDirection(const int dir)
+bool SolveWizard::MarkResolvableByDirection(const int dir)
 {
     std::vector<Cell*> heads;
     GenerateHeads(dir, heads);
+    bool marked = false;
 
     for (int i = 0; i < heads.size(); i++)
     {
@@ -130,6 +139,7 @@ void SolveWizard::MarkResolvableByDirection(const int dir)
             {
                 if (len > 2)
                 {
+                    marked = true;
                     while (begin->GetColor() != end->GetColor())
                     {
                         begin->resolving = true;
@@ -142,6 +152,7 @@ void SolveWizard::MarkResolvableByDirection(const int dir)
         }
         if (len > 2)
         {
+            marked = true;
             while (begin != NULL)
             {
                 begin->resolving = true;
@@ -149,6 +160,8 @@ void SolveWizard::MarkResolvableByDirection(const int dir)
             }
         }
     }
+
+    return marked;
 }
 
 // TODO: different device has different coordinate system. firection might be upside down
@@ -202,22 +215,24 @@ void SolveWizard::Refill(const int dir)
 // Move the Cell up to the start point of falling
 void SolveWizard::Fall(Cell *newPos, Cell *pos, const int offset)
 {
-    Point toPos = pos->getPosition();
+    Point toPos = Map::CalcCellPositionByIndex(pos->GetRow(), pos->GetCol());
     if (newPos != NULL)
     {
-        pos->setPosition(newPos->getPosition());
+        pos->setPosition(Map::CalcCellPositionByIndex(newPos->GetRow(), newPos->GetCol()));
         pos->SetColor(newPos->GetColor());
     }
     else
     {
-        float Y = pos->getPositionY() + offset * pos->getContentSize().height;
-        Point pNewPos(pos->getPositionX(), Y); 
+        Point pNewPos = Map::CalcCellPositionByIndex(pos->GetRow(), pos->GetCol());
+        pNewPos.y += offset * pos->getContentSize().height;
         pos->setPosition(pNewPos);
         pos->SetColor(Cell::RandomColor());
     }
-    float distY = pos->getPositionY() - toPos.y;
-    float speed = 100;
-    float duration = distY / speed;
+
+    double distY = pos->getPositionY() - toPos.y;
+    double speed = 100;
+    double duration = distY / speed;
+
     MoveTo *fall = MoveTo::create(duration, toPos);
     auto actionFallEnds = CallFunc::create(CC_CALLBACK_0(SolveWizard::ActionFallEnds, this));
     Sequence *seq = Sequence::create(fall, actionFallEnds, NULL);
@@ -247,12 +262,9 @@ void SolveWizard::SchedResolve(float dt)
     }
 }
 
-bool SolveWizard::AutoResolve()
+void SolveWizard::AutoResolve()
 {
-    if (this->gameManager->solveWizard->Solve() == 0) return false;
-    this->gameManager->solveWizard->Refill(4);
     // start auto resolving
-    const float deltaTime = 0.5;
+    const float deltaTime = 0.2;
     this->schedule(schedule_selector(SolveWizard::SchedResolve), deltaTime);
-    return true;
 }

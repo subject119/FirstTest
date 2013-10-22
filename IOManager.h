@@ -31,8 +31,9 @@ public:
 
     MapData *GetMapData();
 
-    virtual bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event  *event);
-    virtual void onTouchEnded(cocos2d::Touch* touch, cocos2d::Event  *event);
+    virtual bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event  *event) override;
+    virtual void onTouchEnded(cocos2d::Touch* touch, cocos2d::Event  *event) override;
+    virtual void onTouchMoved(cocos2d::Touch* touch, cocos2d::Event  *event) override;
 };
 
 #endif

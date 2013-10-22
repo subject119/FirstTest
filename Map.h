@@ -41,6 +41,9 @@ public:
 
     static bool IsOdd(const int num);
 
+    // use this method to set cell position for acuracy
+    static cocos2d::Point CalcCellPositionByIndex(const int row, const int cow);
+
 private:
     int height;
     int width;

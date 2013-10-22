@@ -46,9 +46,9 @@ bool Map::isNeighbor(const Cell &cellA, const Cell &cellB)
 
 Cell* Map::N1(const Cell &cell)
 {
-    if (cell.row > 0)
+    if (cell.GetRow() > 0)
     {
-        return cells[cell.row - 1][cell.col];
+        return cells[cell.GetRow() - 1][cell.GetCol()];
     }
     return NULL;
 }
@@ -56,19 +56,19 @@ Cell* Map::N1(const Cell &cell)
 Cell* Map::N2(const Cell &cell)
 {
     // even column
-    if (!IsOdd(cell.col))
+    if (!IsOdd(cell.GetCol()))
     {
-        if (cell.row > 0 && cell.col < this->width - 1)
+        if (cell.GetRow() > 0 && cell.GetCol() < this->width - 1)
         {
-            return cells[cell.row - 1][cell.col + 1];
+            return cells[cell.GetRow() - 1][cell.GetCol() + 1];
         }
     }
     // odd column
     else
     {
-        if (cell.col < this->width - 1)
+        if (cell.GetCol() < this->width - 1)
         {
-            return cells[cell.row][cell.col + 1];
+            return cells[cell.GetRow()][cell.GetCol() + 1];
         }
     }
 
@@ -78,19 +78,19 @@ Cell* Map::N2(const Cell &cell)
 Cell* Map::N3(const Cell &cell)
 {
     // even column
-    if (!IsOdd(cell.col))
+    if (!IsOdd(cell.GetCol()))
     {
-        if (cell.col < this->width - 1)
+        if (cell.GetCol() < this->width - 1)
         {
-            return cells[cell.row][ cell.col + 1];
+            return cells[cell.GetRow()][ cell.GetCol() + 1];
         }
     }
     // odd column
     else
     {
-        if (cell.row < this->height - 1 && cell.col < this->width - 1)
+        if (cell.GetRow() < this->height - 1 && cell.GetCol() < this->width - 1)
         {
-            return cells[cell.row + 1][cell.col + 1];
+            return cells[cell.GetRow() + 1][cell.GetCol() + 1];
         }
     }
 
@@ -99,9 +99,9 @@ Cell* Map::N3(const Cell &cell)
 
 Cell* Map::N4(const Cell &cell)
 {
-    if (cell.row < this->height - 1)
+    if (cell.GetRow() < this->height - 1)
     {
-        return cells[cell.row + 1][cell.col];
+        return cells[cell.GetRow() + 1][cell.GetCol()];
     }
     return NULL;
 }
@@ -109,19 +109,19 @@ Cell* Map::N4(const Cell &cell)
 Cell* Map::N5(const Cell &cell)
 {
     // even column
-    if (!IsOdd(cell.col))
+    if (!IsOdd(cell.GetCol()))
     {
-        if (cell.col > 0)
+        if (cell.GetCol() > 0)
         {
-            return cells[cell.row][cell.col - 1];
+            return cells[cell.GetRow()][cell.GetCol() - 1];
         }
     }
     // odd column
     else
     {
-        if (cell.row < this->height - 1 && cell.col > 0)
+        if (cell.GetRow() < this->height - 1 && cell.GetCol() > 0)
         {
-            return cells[cell.row + 1][cell.col - 1];
+            return cells[cell.GetRow() + 1][cell.GetCol() - 1];
         }
     }
 
@@ -131,19 +131,19 @@ Cell* Map::N5(const Cell &cell)
 Cell* Map::N6(const Cell &cell)
 {
     // even column
-    if (!IsOdd(cell.col))
+    if (!IsOdd(cell.GetCol()))
     {
-        if (cell.row > 0 && cell.col > 0)
+        if (cell.GetRow() > 0 && cell.GetCol() > 0)
         {
-            return cells[cell.row - 1][cell.col - 1];
+            return cells[cell.GetRow() - 1][cell.GetCol() - 1];
         }
     }
     // odd column
     else
     {
-        if (cell.col > 0)
+        if (cell.GetCol() > 0)
         {
-            return cells[cell.row][cell.col - 1];
+            return cells[cell.GetRow()][cell.GetCol() - 1];
         }
     }
 
@@ -167,25 +167,16 @@ void Map::InitializeMap(const MapData &mapData)
         cells[i] = new Cell*[this->width];
     }
 
-    for (int i = 0; i < this->height; i++)
+    for (int row = 0; row < this->height; row++)
     {
-        for (int j = 0; j < width; j++)
+        for (int col = 0; col < width; col++)
         {
-            cells[i][j] = Cell::createWithTexture(Cell::ChooseTextureByColor(GemColor::Vacant));
-            cells[i][j]->init(i, j, CellType::Inspace);
-            
-            double X = 18.75 * j;
-            double Y = 21.6506351 * i;
-            if (IsOdd(j))
-            {
-                // if it is odd column, move cells up
-                Y += 12.0;
-            }
-            cells[i][j]->setPositionX(X);
-            cells[i][j]->setPositionY(Y);
+            cells[row][col] = Cell::createWithTexture(Cell::ChooseTextureByColor(GemColor::Vacant));
+            cells[row][col]->init(row, col, CellType::Inspace);
+            cells[row][col]->setPosition(CalcCellPositionByIndex(row, col));
 
             // Don't forget to add Sprites to Layer, otherwise later app crashes when doing clean up
-            this->addChild(cells[i][j]);
+            this->addChild(cells[row][col]);
         }
     }
 }
@@ -218,4 +209,24 @@ int Map::GetWidth()
 bool Map::IsOdd(const int num)
 {
     return ((num & 1) == 1);
+}
+
+Point Map::CalcCellPositionByIndex(const int row, const int col)
+{
+    //double cellWidth = cells[row][col]->getContentSize().width;
+    //double cellHeight = cells[row][col]->getContentSize().height;
+    //double XInterval= cellWidth * 3/4;
+    //double YInterval = cellHeight * sqrt(3.0);
+
+    // hard code numbers here: image 50*43 pixels
+    double XInterval = 18.75;
+    double YInterval = 21.6506351;
+
+    double X = XInterval * col;
+    double Y = YInterval * row;
+
+    // if it is odd column, move cells up
+    if (IsOdd(col)) Y += (YInterval / 2.0);
+
+    return Point(X, Y);
 }

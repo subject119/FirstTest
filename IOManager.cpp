@@ -48,30 +48,73 @@ bool IOManager::onTouchBegan(Touch* touch, Event  *event)
     return true;
 }
 
-void IOManager::onTouchEnded(Touch* touch, Event  *event)
+void IOManager::onTouchMoved(Touch* touch, Event  *event)
 {
     if (this->selectedCell == NULL) return;
 
-    Cell *targetCell = NULL;
-
     Point mapCoord = this->gameManager->map->convertTouchToNodeSpace(touch);
-    int height = this->gameManager->map->GetHeight();
-    int width = this->gameManager->map->GetWidth();
-    for (int i = 0; i < height; i++)
+    float dist = mapCoord.getDistance(this->selectedCell->getPosition());
+    float threathold = this->selectedCell->getContentSize().width / 2.0;
+    if (dist < threathold) return;
+    
+    float radian = (mapCoord - this->selectedCell->getPosition()).getAngle();
+    float angle = CC_RADIANS_TO_DEGREES(radian);
+    int target = 0;
+    if (angle > 0 && angle < 60) 
     {
-        for (int j = 0; j < width; j++)
-        {
-            if (this->gameManager->map->cells[i][j]->getBoundingBox().containsPoint(mapCoord))
-            {
-                targetCell = this->gameManager->map->cells[i][j];
-                break;
-            }
-        }
-        if (targetCell != NULL) break;
+        target = 3;
+    }
+    else if (angle > -180 && angle < -120) 
+    {
+        target = 6;
+    }
+    else if (angle > 120 && angle < 180)
+    {
+        target = 5;
+    }
+    else if (angle > -60 && angle < 0)
+    {
+        target = 2;
+    }
+    else if (angle > 60 && angle < 120){
+        target = 4;
+    }
+    else if (angle > -120 && angle < -60){
+        target = 1;
     }
 
-    if (targetCell != NULL)
+    // no animatoin is running
+    if (this->gameManager->map->getNumberOfRunningActions() == 0) 
     {
-        this->gameManager->solveWizard->SolveBySwap(*this->selectedCell, *targetCell);
+        this->gameManager->solveWizard->SolveBySwap(*this->selectedCell, *this->gameManager->map->Neighbor(*this->selectedCell, target));
     }
+}
+
+void IOManager::onTouchEnded(Touch* touch, Event  *event)
+{
+    //if (this->selectedCell == NULL) return;
+    //this->selectedCell->setPosition(Map::CalcCellPositionByIndex(this->selectedCell->GetRow(), this->selectedCell->GetCol()));
+
+    //Cell *targetCell = NULL;
+
+    //Point mapCoord = this->gameManager->map->convertTouchToNodeSpace(touch);
+    //int height = this->gameManager->map->GetHeight();
+    //int width = this->gameManager->map->GetWidth();
+    //for (int i = 0; i < height; i++)
+    //{
+    //    for (int j = 0; j < width; j++)
+    //    {
+    //        if (this->gameManager->map->cells[i][j]->getBoundingBox().containsPoint(mapCoord))
+    //        {
+    //            targetCell = this->gameManager->map->cells[i][j];
+    //            break;
+    //        }
+    //    }
+    //    if (targetCell != NULL) break;
+    //}
+
+    //if (targetCell != NULL)
+    //{
+    //    this->gameManager->solveWizard->SolveBySwap(*this->selectedCell, *targetCell);
+    //}
 }

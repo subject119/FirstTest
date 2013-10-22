@@ -2,6 +2,16 @@
 
 USING_NS_CC;
 
+int Cell::GetRow() const
+{
+    return this->row;
+}
+
+int Cell::GetCol() const
+{
+    return this->col;
+}
+
 void Cell::init(const int r, const int c, const CellType t)
 {
     this->color = GemColor::Vacant;
