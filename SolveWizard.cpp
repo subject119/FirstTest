@@ -2,6 +2,7 @@
 #include "GameManager.h"
 #include "ScoreManager.h"
 #include "UIManager.h"
+#include "IOManager.h"
 
 USING_NS_CC;
 
@@ -268,6 +269,7 @@ void SolveWizard::SchedResolve(float dt)
     {
         // stop scheduler, auto resolve stops here
         this->unschedule(schedule_selector(SolveWizard::SchedResolve));
+        this->gameManager->iOManager->setTouchEnabled(true);;
     }
     else
     {
@@ -277,7 +279,9 @@ void SolveWizard::SchedResolve(float dt)
 
 void SolveWizard::AutoResolve()
 {
+    // disable user input
+    this->gameManager->iOManager->setTouchEnabled(false);;
     // start auto resolving
-    const float deltaTime = 0.1;
-    this->schedule(schedule_selector(SolveWizard::SchedResolve), deltaTime);
+    const float loopInterval = 0.2;
+    this->schedule(schedule_selector(SolveWizard::SchedResolve), loopInterval);
 }

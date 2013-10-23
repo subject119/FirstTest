@@ -10,7 +10,7 @@ class MapData;
 
 enum class DIRECTION : int8_t
 {
-    DIR1 = 1000,
+    DIR1,
     DIR2,
     DIR3,
     DIR4,
