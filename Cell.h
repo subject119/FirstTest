@@ -27,7 +27,7 @@ class Cell : public cocos2d::Sprite
 public:
     virtual ~Cell() {}
 
-    void init(const int r, const int c, const CellType t);
+    void initialize(const int r, const int c, const CellType t);
 
     static Cell* createWithTexture(cocos2d::Texture2D *texture);
 

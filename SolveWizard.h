@@ -3,6 +3,8 @@
 
 #include "cocos2d.h"
 
+#include "Map.h"
+
 class Cell;
 class GameManager;
 
@@ -28,17 +30,19 @@ private:
 
     void SchedResolve(float dt);
 
-    void GenerateHeads(const int dir, std::vector<Cell*> &heads);
+    void GenerateHeads(const DIRECTION dir, std::vector<Cell*> &heads);
 
-    bool MarkResolvableByDirection(const int dir);
+    bool MarkResolvableByDirection(const DIRECTION dir);
 
     int Solve();
 
-    void Refill(const int dir);
+    void Refill(const DIRECTION dir);
 
     void Fall(Cell *newPos, Cell *Pos, const int offset);
     
     void ActionFallEnds();
+
+    void ClearResolvingFlags();
 };
 
 #endif

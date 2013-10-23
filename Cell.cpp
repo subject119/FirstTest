@@ -12,7 +12,7 @@ int Cell::GetCol() const
     return this->col;
 }
 
-void Cell::init(const int r, const int c, const CellType t)
+void Cell::initialize(const int r, const int c, const CellType t)
 {
     this->color = GemColor::Vacant;
     this->resolving = false;

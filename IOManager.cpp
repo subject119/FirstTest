@@ -54,40 +54,37 @@ void IOManager::onTouchMoved(Touch* touch, Event  *event)
 
     Point mapCoord = this->gameManager->map->convertTouchToNodeSpace(touch);
     float dist = mapCoord.getDistance(this->selectedCell->getPosition());
-    float threathold = this->selectedCell->getContentSize().width / 2.0;
-    if (dist < threathold) return;
+    float threshold = this->selectedCell->getContentSize().width / 2.0;
+    if (dist < threshold) return;
     
     float radian = (mapCoord - this->selectedCell->getPosition()).getAngle();
     float angle = CC_RADIANS_TO_DEGREES(radian);
-    int target = 0;
+    DIRECTION target;
     if (angle > 0 && angle < 60) 
     {
-        target = 3;
+        target = DIRECTION::DIR3;
     }
     else if (angle > -180 && angle < -120) 
     {
-        target = 6;
+        target = DIRECTION::DIR6;
     }
     else if (angle > 120 && angle < 180)
     {
-        target = 5;
+        target = DIRECTION::DIR5;
     }
     else if (angle > -60 && angle < 0)
     {
-        target = 2;
+        target = DIRECTION::DIR2;
     }
     else if (angle > 60 && angle < 120){
-        target = 4;
+        target = DIRECTION::DIR4;
     }
     else if (angle > -120 && angle < -60){
-        target = 1;
+        target = DIRECTION::DIR1;
     }
 
-    // no animatoin is running
-    if (this->gameManager->map->getNumberOfRunningActions() == 0) 
-    {
-        this->gameManager->solveWizard->SolveBySwap(*this->selectedCell, *this->gameManager->map->Neighbor(*this->selectedCell, target));
-    }
+    this->gameManager->solveWizard->SolveBySwap(*this->selectedCell, 
+        *this->gameManager->map->Neighbor(*this->selectedCell, target));
 }
 
 void IOManager::onTouchEnded(Touch* touch, Event  *event)

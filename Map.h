@@ -8,6 +8,16 @@
 class GameManager;
 class MapData;
 
+enum class DIRECTION : int8_t
+{
+    DIR1 = 1000,
+    DIR2,
+    DIR3,
+    DIR4,
+    DIR5,
+    DIR6
+};
+
 class Map : public cocos2d::Layer
 {
 public:
@@ -31,7 +41,7 @@ public:
     //  5 \___/ 3                        6 \___/ 2
     //      4                                1
     /////////////////////////////////////////////////////////////
-    Cell* Neighbor(const Cell &cell, const int num);
+    Cell* Neighbor(const Cell &cell, const DIRECTION dir);
 
     bool isNeighbor(const Cell &cellA, const Cell &cellB);
 
@@ -41,8 +51,9 @@ public:
 
     static bool IsOdd(const int num);
 
-    // use this method to set cell position for acuracy
-    static cocos2d::Point CalcCellPositionByIndex(const int row, const int cow);
+    cocos2d::Point GetCellOriginalPos(const Cell &cell);
+
+    cocos2d::Point GetCellOriginalPos(const int row, const int col);
 
 private:
     int height;
@@ -55,8 +66,13 @@ private:
     Cell* N5(const Cell &cell);
     Cell* N6(const Cell &cell);
 
+    void ReadMapData(const MapData &mapData);
     void InitializeMap(const MapData &mapData);
     void InitializeColor();
+    void InitializeCellsPos();
+
+    cocos2d::Point ***pos; // position infomation
+    static cocos2d::Point CalcCellPositionByIndex(const int row, const int cow);
 };
 
 #endif

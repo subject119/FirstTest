@@ -13,21 +13,20 @@ bool Map::init()
     }
 }
 
-
-Cell* Map::Neighbor(const Cell &cell, const int num)
+Cell* Map::Neighbor(const Cell &cell, const DIRECTION dir)
 {
-    switch (num){
-    case 1:
+    switch (dir){
+    case DIRECTION::DIR1:
         return N1(cell);
-    case 2:
+    case DIRECTION::DIR2:
         return N2(cell);
-    case 3:
+    case DIRECTION::DIR3:
         return N3(cell);
-    case 4:
+    case DIRECTION::DIR4:
         return N4(cell);
-    case 5:
+    case DIRECTION::DIR5:
         return N5(cell);
-    case 6:
+    case DIRECTION::DIR6:
         return N6(cell);
     default:
         return NULL;
@@ -36,12 +35,12 @@ Cell* Map::Neighbor(const Cell &cell, const int num)
 
 bool Map::isNeighbor(const Cell &cellA, const Cell &cellB)
 {
-    return ((Neighbor(cellA, 1) == &cellB) ||
-        (Neighbor(cellA, 2) == &cellB) ||
-        (Neighbor(cellA, 3) == &cellB) ||
-        (Neighbor(cellA, 4) == &cellB) ||
-        (Neighbor(cellA, 5) == &cellB) ||
-        (Neighbor(cellA, 6) == &cellB));
+    return ((Neighbor(cellA, DIRECTION::DIR1) == &cellB) ||
+        (Neighbor(cellA, DIRECTION::DIR2) == &cellB) ||
+        (Neighbor(cellA, DIRECTION::DIR3) == &cellB) ||
+        (Neighbor(cellA, DIRECTION::DIR4) == &cellB) ||
+        (Neighbor(cellA, DIRECTION::DIR5) == &cellB) ||
+        (Neighbor(cellA, DIRECTION::DIR6) == &cellB));
 }
 
 Cell* Map::N1(const Cell &cell)
@@ -157,10 +156,44 @@ void Map::Reset(const MapData &mapData)
     this->gameManager->solveWizard->AutoResolve();
 }
 
-void Map::InitializeMap(const MapData &mapData)
+void Map::ReadMapData(const MapData &mapData)
 {
     this->height = mapData.height;
     this->width = mapData.width;
+}
+
+void Map::InitializeCellsPos()
+{
+    pos = new Point**[this->height];
+    for (int i = 0; i < this->height; i++)
+    {
+        pos[i] = new Point*[this->width];
+    }
+
+    for (int row = 0; row < this->height; row++)
+    {
+        for (int col = 0; col < width; col++)
+        {
+            pos[row][col] = new Point(CalcCellPositionByIndex(row, col));
+        }
+    }
+}
+
+Point Map::GetCellOriginalPos(const Cell &cell)
+{
+    return GetCellOriginalPos(cell.GetRow(), cell.GetCol());
+}
+
+Point Map::GetCellOriginalPos(const int row, const int col)
+{
+    return *(pos[row][col]);
+}
+
+void Map::InitializeMap(const MapData &mapData)
+{
+    ReadMapData(mapData);
+    InitializeCellsPos();
+
     cells = new Cell**[this->height];
     for (int i = 0; i < this->height; i++)
     {
@@ -172,8 +205,8 @@ void Map::InitializeMap(const MapData &mapData)
         for (int col = 0; col < width; col++)
         {
             cells[row][col] = Cell::createWithTexture(Cell::ChooseTextureByColor(GemColor::Vacant));
-            cells[row][col]->init(row, col, CellType::Inspace);
-            cells[row][col]->setPosition(CalcCellPositionByIndex(row, col));
+            cells[row][col]->initialize(row, col, CellType::Inspace);
+            cells[row][col]->setPosition(*pos[row][col]);
 
             // Don't forget to add Sprites to Layer, otherwise later app crashes when doing clean up
             this->addChild(cells[row][col]);

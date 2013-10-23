@@ -1,9 +1,7 @@
 #include "SolveWizard.h"
 #include "GameManager.h"
 #include "ScoreManager.h"
-#include "Map.h"
 #include "UIManager.h"
-#include "Cell.h"
 
 USING_NS_CC;
 
@@ -35,9 +33,9 @@ void SolveWizard::SolveBySwap(Cell &cellA, Cell &cellB)
 
 int SolveWizard::Solve()
 {
-    MarkResolvableByDirection(2);
-    MarkResolvableByDirection(3);
-    MarkResolvableByDirection(4);
+    MarkResolvableByDirection(DIRECTION::DIR2);
+    MarkResolvableByDirection(DIRECTION::DIR3);
+    MarkResolvableByDirection(DIRECTION::DIR4);
     int resolved = Resolve();
     this->gameManager->scoreManager->AddToScore(resolved);
     this->gameManager->UIManager->SetScore(this->gameManager->scoreManager->GetScore());
@@ -46,7 +44,24 @@ int SolveWizard::Solve()
 
 bool SolveWizard::QuickTestSolvable()
 {
-    return MarkResolvableByDirection(2) || MarkResolvableByDirection(3) || MarkResolvableByDirection(4);
+    bool resolved = MarkResolvableByDirection(DIRECTION::DIR2) || 
+        MarkResolvableByDirection(DIRECTION::DIR3) || 
+        MarkResolvableByDirection(DIRECTION::DIR4);
+    ClearResolvingFlags();
+    return resolved;
+}
+
+void SolveWizard::ClearResolvingFlags()
+{
+    int height = this->gameManager->map->GetHeight();
+    int width = this->gameManager->map->GetWidth();
+    for (int row = 0; row < height; row++)
+    {
+        for (int col = 0; col < width; col++)
+        {
+            this->gameManager->map->cells[row][col]->resolving = false;
+        }
+    }
 }
 
 int SolveWizard::Resolve()
@@ -70,11 +85,11 @@ int SolveWizard::Resolve()
     return totalResolved;
 }
 
-void SolveWizard::GenerateHeads(const int dir, std::vector<Cell*> &heads)
+void SolveWizard::GenerateHeads(const DIRECTION dir, std::vector<Cell*> &heads)
 {
     switch (dir)
     {
-    case 2:
+    case DIRECTION::DIR2:
         {
             int i = 0;
             for (; i < this->gameManager->map->GetHeight(); i++)
@@ -90,7 +105,7 @@ void SolveWizard::GenerateHeads(const int dir, std::vector<Cell*> &heads)
             }
             break;
         }
-    case 3:
+    case DIRECTION::DIR3:
         {
             int i = 0;
             for (; i < this->gameManager->map->GetHeight(); i++)
@@ -106,7 +121,7 @@ void SolveWizard::GenerateHeads(const int dir, std::vector<Cell*> &heads)
             }
             break;
         }
-    case 4:
+    case DIRECTION::DIR4:
         {
             for (int i = 0; i < this->gameManager->map->GetWidth(); i++)
             {
@@ -117,7 +132,7 @@ void SolveWizard::GenerateHeads(const int dir, std::vector<Cell*> &heads)
     }
 }
 
-bool SolveWizard::MarkResolvableByDirection(const int dir)
+bool SolveWizard::MarkResolvableByDirection(const DIRECTION dir)
 {
     std::vector<Cell*> heads;
     GenerateHeads(dir, heads);
@@ -165,7 +180,7 @@ bool SolveWizard::MarkResolvableByDirection(const int dir)
 }
 
 // TODO: different device has different coordinate system. firection might be upside down
-void SolveWizard::Refill(const int dir)
+void SolveWizard::Refill(const DIRECTION dir)
 {
     for (int col = 0; col < this->gameManager->map->GetWidth(); col++)
     {
@@ -215,15 +230,15 @@ void SolveWizard::Refill(const int dir)
 // Move the Cell up to the start point of falling
 void SolveWizard::Fall(Cell *newPos, Cell *pos, const int offset)
 {
-    Point toPos = Map::CalcCellPositionByIndex(pos->GetRow(), pos->GetCol());
+    Point toPos = this->gameManager->map->GetCellOriginalPos(*pos);
     if (newPos != NULL)
     {
-        pos->setPosition(Map::CalcCellPositionByIndex(newPos->GetRow(), newPos->GetCol()));
+        pos->setPosition(this->gameManager->map->GetCellOriginalPos(*newPos));
         pos->SetColor(newPos->GetColor());
     }
     else
     {
-        Point pNewPos = Map::CalcCellPositionByIndex(pos->GetRow(), pos->GetCol());
+        Point pNewPos = this->gameManager->map->GetCellOriginalPos(*pos);
         pNewPos.y += offset * pos->getContentSize().height;
         pos->setPosition(pNewPos);
         pos->SetColor(Cell::RandomColor());
@@ -246,25 +261,23 @@ void SolveWizard::ActionFallEnds()
 
 void SolveWizard::SchedResolve(float dt)
 {
-    while (this->gameManager->solveWizard->fallingCount > 0) 
-    {
-        // cells are still falling, keep wait
-        return;
-    }
+    // cells are still falling, keep wait
+    if (this->gameManager->solveWizard->fallingCount > 0) return;
+
     if (this->gameManager->solveWizard->Solve() == 0) 
     {
-        // stop scheduler
+        // stop scheduler, auto resolve stops here
         this->unschedule(schedule_selector(SolveWizard::SchedResolve));
     }
     else
     {
-        this->gameManager->solveWizard->Refill(4);
+        this->gameManager->solveWizard->Refill(DIRECTION::DIR4);
     }
 }
 
 void SolveWizard::AutoResolve()
 {
     // start auto resolving
-    const float deltaTime = 0.2;
+    const float deltaTime = 0.1;
     this->schedule(schedule_selector(SolveWizard::SchedResolve), deltaTime);
 }
