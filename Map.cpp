@@ -263,3 +263,45 @@ Point Map::CalcCellPositionByIndex(const int row, const int col)
 
     return Point(X, Y);
 }
+
+void Map::onEnter()
+{
+    this->timer = 0;
+
+    Layer::onEnter();
+
+    this->scheduleUpdate();
+}
+
+void Map::update(float dt)
+{
+    timer++;
+
+    float V = 0.0;
+    float G = 0.05;
+
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            if (cells[i][j]->falling)
+            {
+                // calc cell's new y pos
+                cells[i][j]->setPositionY(cells[i][j]->getPositionY() - V - (this->timer - cells[i][j]->fallingTime) * G);
+
+                // cell has arrived the targeted pos, stop falling
+                if (cells[i][j]->getPositionY() < GetCellOriginalPos(*cells[i][j]).y)
+                {
+                    cells[i][j]->setPositionY(GetCellOriginalPos(*cells[i][j]).y);
+                    cells[i][j]->falling = false;
+                    this->gameManager->solveWizard->fallingCount--;
+                }
+            }
+        }
+    }
+}
+
+unsigned long Map::GetTimer()
+{
+    return this->timer;
+}

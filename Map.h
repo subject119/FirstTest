@@ -47,17 +47,25 @@ public:
 
     void Reset(const MapData &mapData);  
 
-    void Draw();
-
     static bool IsOdd(const int num);
 
     cocos2d::Point GetCellOriginalPos(const Cell &cell);
 
     cocos2d::Point GetCellOriginalPos(const int row, const int col);
 
+    static cocos2d::Point CalcCellPositionByIndex(const int row, const int cow);
+
+    virtual void onEnter();
+
+    void update(float dt);
+
+    unsigned long GetTimer();
+
 private:
     int height;
     int width;
+
+    unsigned long timer;
 
     Cell* N1(const Cell &cell);
     Cell* N2(const Cell &cell);
@@ -72,7 +80,6 @@ private:
     void InitializeCellsPos();
 
     cocos2d::Point ***pos; // position infomation
-    static cocos2d::Point CalcCellPositionByIndex(const int row, const int cow);
 };
 
 #endif

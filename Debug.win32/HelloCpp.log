@@ -1,11 +1,17 @@
-﻿Build started 10/23/2013 12:50:29 AM.
+﻿Build started 10/24/2013 3:03:55 AM.
      1>Project "C:\Users\Kelvin\Downloads\cocos2d-x-3.0alpha0\cocos2d-x-3.0alpha0\samples\Cpp\HelloCpp\proj.win32\HelloCpp.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /I"C:\Users\Kelvin\Downloads\cocos2d-x-3.0alpha0\cocos2d-x-3.0alpha0\samples\Cpp\HelloCpp\proj.win32\..\..\..\..\cocos2dx" /I"C:\Users\Kelvin\Downloads\cocos2d-x-3.0alpha0\cocos2d-x-3.0alpha0\samples\Cpp\HelloCpp\proj.win32\..\..\..\..\cocos2dx\include" /I"C:\Users\Kelvin\Downloads\cocos2d-x-3.0alpha0\cocos2d-x-3.0alpha0\samples\Cpp\HelloCpp\proj.win32\..\..\..\..\cocos2dx\kazmath\include" /I"C:\Users\Kelvin\Downloads\cocos2d-x-3.0alpha0\cocos2d-x-3.0alpha0\samples\Cpp\HelloCpp\proj.win32\..\..\..\..\cocos2dx\platform\win32" /I"C:\Users\Kelvin\Downloads\cocos2d-x-3.0alpha0\cocos2d-x-3.0alpha0\samples\Cpp\HelloCpp\proj.win32\..\..\..\..\cocos2dx\platform\third_party\win32\OGLES" /I..\Classes /I"C:\Users\Kelvin\Downloads\cocos2d-x-3.0alpha0\cocos2d-x-3.0alpha0\samples\Cpp\HelloCpp\proj.win32\..\..\..\..\external\chipmunk\include\chipmunk" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D COCOS2D_DEBUG=1 /D _CRT_SECURE_NO_WARNINGS /D _SCL_SECURE_NO_WARNINGS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug.win32\\" /Fd"Debug.win32\vc110.pdb" /Gd /TP /wd4267 /wd4251 /wd4244 /analyze- /errorReport:prompt SolveWizard.cpp
-         SolveWizard.cpp
-     1>c:\users\kelvin\downloads\cocos2d-x-3.0alpha0\cocos2d-x-3.0alpha0\samples\cpp\hellocpp\proj.win32\cell.h(53): warning C4996: 'cocos2d::CCTexture2D': was declared deprecated
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /I"C:\Users\Kelvin\Downloads\cocos2d-x-3.0alpha0\cocos2d-x-3.0alpha0\samples\Cpp\HelloCpp\proj.win32\..\..\..\..\cocos2dx" /I"C:\Users\Kelvin\Downloads\cocos2d-x-3.0alpha0\cocos2d-x-3.0alpha0\samples\Cpp\HelloCpp\proj.win32\..\..\..\..\cocos2dx\include" /I"C:\Users\Kelvin\Downloads\cocos2d-x-3.0alpha0\cocos2d-x-3.0alpha0\samples\Cpp\HelloCpp\proj.win32\..\..\..\..\cocos2dx\kazmath\include" /I"C:\Users\Kelvin\Downloads\cocos2d-x-3.0alpha0\cocos2d-x-3.0alpha0\samples\Cpp\HelloCpp\proj.win32\..\..\..\..\cocos2dx\platform\win32" /I"C:\Users\Kelvin\Downloads\cocos2d-x-3.0alpha0\cocos2d-x-3.0alpha0\samples\Cpp\HelloCpp\proj.win32\..\..\..\..\cocos2dx\platform\third_party\win32\OGLES" /I..\Classes /I"C:\Users\Kelvin\Downloads\cocos2d-x-3.0alpha0\cocos2d-x-3.0alpha0\samples\Cpp\HelloCpp\proj.win32\..\..\..\..\external\chipmunk\include\chipmunk" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D COCOS2D_DEBUG=1 /D _CRT_SECURE_NO_WARNINGS /D _SCL_SECURE_NO_WARNINGS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug.win32\\" /Fd"Debug.win32\vc110.pdb" /Gd /TP /wd4267 /wd4251 /wd4244 /analyze- /errorReport:prompt IOManager.cpp Map.cpp
+         Map.cpp
+     1>c:\users\kelvin\downloads\cocos2d-x-3.0alpha0\cocos2d-x-3.0alpha0\samples\cpp\hellocpp\proj.win32\cell.h(55): warning C4996: 'cocos2d::CCTexture2D': was declared deprecated
                  c:\users\kelvin\downloads\cocos2d-x-3.0alpha0\cocos2d-x-3.0alpha0\cocos2dx\include\ccdeprecated.h(572) : see declaration of 'cocos2d::CCTexture2D'
-     1>c:\users\kelvin\downloads\cocos2d-x-3.0alpha0\cocos2d-x-3.0alpha0\samples\cpp\hellocpp\proj.win32\solvewizard.cpp(142): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\kelvin\downloads\cocos2d-x-3.0alpha0\cocos2d-x-3.0alpha0\samples\cpp\hellocpp\proj.win32\map.cpp(281): warning C4305: 'initializing' : truncation from 'double' to 'float'
+         IOManager.cpp
+     1>c:\users\kelvin\downloads\cocos2d-x-3.0alpha0\cocos2d-x-3.0alpha0\samples\cpp\hellocpp\proj.win32\cell.h(55): warning C4996: 'cocos2d::CCTexture2D': was declared deprecated
+                 c:\users\kelvin\downloads\cocos2d-x-3.0alpha0\cocos2d-x-3.0alpha0\cocos2dx\include\ccdeprecated.h(572) : see declaration of 'cocos2d::CCTexture2D'
+         Generating Code...
+     1>c:\users\kelvin\downloads\cocos2d-x-3.0alpha0\cocos2d-x-3.0alpha0\samples\cpp\hellocpp\proj.win32\iomanager.cpp(18): warning C4715: 'IOManager::init' : not all control paths return a value
+     1>c:\users\kelvin\downloads\cocos2d-x-3.0alpha0\cocos2d-x-3.0alpha0\samples\cpp\hellocpp\proj.win32\map.cpp(14): warning C4715: 'Map::init' : not all control paths return a value
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Kelvin\Downloads\cocos2d-x-3.0alpha0\cocos2d-x-3.0alpha0\Debug.win32\HelloCpp.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\Users\Kelvin\Downloads\cocos2d-x-3.0alpha0\cocos2d-x-3.0alpha0\Debug.win32\\" /LIBPATH:"C:\Users\Kelvin\Downloads\cocos2d-x-3.0alpha0\cocos2d-x-3.0alpha0\Debug.win32\\" libcocos2d.lib libchipmunk.lib opengl32.lib glew32.lib libzlib.lib libpng.lib libjpeg.lib libtiff.lib libwebp.lib libiconv.lib glfw3.lib freetype250.lib winmm.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Kelvin\Downloads\cocos2d-x-3.0alpha0\cocos2d-x-3.0alpha0\Debug.win32\HelloCpp.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Kelvin\Downloads\cocos2d-x-3.0alpha0\cocos2d-x-3.0alpha0\Debug.win32\HelloCpp.lib" /MACHINE:X86 /SAFESEH Debug.win32\AppDelegate.obj
          Debug.win32\Cell.obj
@@ -23,4 +29,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:06.98
+Time Elapsed 00:00:09.16

@@ -83,8 +83,11 @@ void IOManager::onTouchMoved(Touch* touch, Event  *event)
         target = DIRECTION::DIR1;
     }
 
-    this->gameManager->solveWizard->SolveBySwap(*this->selectedCell, 
-        *this->gameManager->map->Neighbor(*this->selectedCell, target));
+    Cell *targetCell = this->gameManager->map->Neighbor(*this->selectedCell, target);
+    if (targetCell != NULL)
+    {
+        this->gameManager->solveWizard->SolveBySwap(*this->selectedCell, *targetCell);
+    }
 }
 
 void IOManager::onTouchEnded(Touch* touch, Event  *event)

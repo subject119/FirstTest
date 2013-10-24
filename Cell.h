@@ -46,6 +46,8 @@ public:
     static GemColor RandomColor();
     static void CacheCellTexture();
 
+    unsigned long fallingTime;
+
 private:
     GemColor color;
     int row;

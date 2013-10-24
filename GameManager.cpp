@@ -54,10 +54,18 @@ bool GameManager::init()
     this->addChild(this->UIManager);
     this->UIManager->setPosition(Point::ZERO);
 
+    srand (time(NULL));
     Cell::CacheCellTexture();
     this->UIManager->InitializeUI();
     this->map->Reset(*(this->iOManager->GetMapData())); 
     this->scoreManager->StartRecording();
 
     return true;
+}
+
+long GameManager::GetTime()
+{
+    struct timeval now;
+    gettimeofday(&now, NULL);
+    return (now.tv_sec * 1000 + now.tv_sec / 1000);
 }

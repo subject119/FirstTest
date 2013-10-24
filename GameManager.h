@@ -24,6 +24,8 @@ public:
     IOManager *iOManager;
     ScoreManager *scoreManager;
     UIManager *UIManager;
+
+    static long GetTime();
 };
 
 #endif // __GAMEMANAGER_SCENE_H__

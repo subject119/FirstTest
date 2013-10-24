@@ -23,8 +23,9 @@ public:
 
     bool QuickTestSolvable();
 
-private:
     int fallingCount;
+
+private:
 
     int Resolve();
 
@@ -36,13 +37,9 @@ private:
 
     int Solve();
 
-    void Refill(const DIRECTION dir);
-
-    void Fall(Cell *newPos, Cell *Pos, const int offset);
-    
-    void ActionFallEnds();
-
     void ClearResolvingFlags();
+
+    void StartToFall(const DIRECTION dir);
 };
 
 #endif

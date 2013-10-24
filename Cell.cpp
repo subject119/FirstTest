@@ -20,6 +20,7 @@ void Cell::initialize(const int r, const int c, const CellType t)
     this->type = t;
     this->row = r;
     this->col = c;
+    this->fallingTime = 0.0;
 }
 
 Cell* Cell::createWithTexture(Texture2D *texture)
