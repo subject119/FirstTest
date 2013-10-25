@@ -8,6 +8,13 @@
 class Cell;
 class GameManager;
 
+enum class GameStates
+{
+    Start,
+    Resolving,
+    WaitingForUserInput
+};
+
 class SolveWizard : public cocos2d::Node
 {
 public:
@@ -19,17 +26,25 @@ public:
 
     void SolveBySwap(Cell &cellA, Cell &cellB);
 
-    void AutoResolve();
-
     bool QuickTestSolvable();
 
     int fallingCount;
+
+    int resolvingCount;
+
+    void update(float dt);
+
+    virtual void onEnter();
+
+    GameStates gameState;
 
 private:
 
     int Resolve();
 
-    void SchedResolve(float dt);
+    void ResolveWithAnim(Cell *cell, const float animDuration);
+
+    void ActionResolveEnds(Cell *cell);
 
     void GenerateHeads(const DIRECTION dir, std::vector<Cell*> &heads);
 

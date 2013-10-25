@@ -12,6 +12,15 @@ USING_NS_CC;
 SolveWizard::SolveWizard()
 {
     this->fallingCount = 0;
+    this->resolvingCount = 0;
+    this->gameState = GameStates::Start;
+}
+
+void SolveWizard::onEnter()
+{
+    Node::onEnter();
+
+    this->scheduleUpdate();
 }
 
 void SolveWizard::SolveBySwap(Cell &cellA, Cell &cellB)
@@ -24,7 +33,7 @@ void SolveWizard::SolveBySwap(Cell &cellA, Cell &cellB)
         
         if (QuickTestSolvable())
         {
-            AutoResolve();
+            this->gameState = GameStates::Start;
         }
         else
         {
@@ -35,29 +44,44 @@ void SolveWizard::SolveBySwap(Cell &cellA, Cell &cellB)
     }
 }
 
-void SolveWizard::AutoResolve()
+void SolveWizard::update(float dt)
 {
-    // disable user input
-    this->gameManager->iOManager->setTouchEnabled(false);;
-    // start auto resolving
-    const float loopInterval = 0.25;
-    this->schedule(schedule_selector(SolveWizard::SchedResolve), loopInterval);
-}
-
-void SolveWizard::SchedResolve(float dt)
-{
-    // cells are still falling, keep wait
-    if (this->fallingCount > 0) return;
-
-    if (this->Solve() == 0) 
+    switch (this->gameState)
     {
-        // stop scheduler, auto resolve stops here
-        this->unschedule(schedule_selector(SolveWizard::SchedResolve));
-        this->gameManager->iOManager->setTouchEnabled(true);;
-    }
-    else
-    {
-        this->StartToFall(DIRECTION::DIR4);
+    case GameStates::Start:
+        {
+            this->gameManager->iOManager->setTouchEnabled(false);
+            if (this->Solve() == 0)
+            {
+                this->gameManager->iOManager->setTouchEnabled(true);;
+                this->gameState = GameStates::WaitingForUserInput;
+            }
+            else
+            {
+                this->gameState = GameStates::Resolving;
+            }
+        }
+        break;
+    case GameStates::Resolving:
+        {
+            if (this->resolvingCount > 0)
+            {
+                return;
+            }
+            else
+            {
+                this->StartToFall(DIRECTION::DIR4);
+                if (this->fallingCount > 0)
+                {
+                    return;
+                }
+                else
+                {
+                    this->gameState = GameStates::Start;
+                }
+            }
+        }
+        break;
     }
 }
 
@@ -124,6 +148,7 @@ int SolveWizard::Resolve()
     int totalResolved = 0;
     int height = this->gameManager->map->GetHeight();
     int width = this->gameManager->map->GetWidth();
+    float animDuration = 0.15f;
     for (int row = 0; row < height; row++)
     {
         for (int col = 0; col < width; col++)
@@ -131,13 +156,32 @@ int SolveWizard::Resolve()
             Cell* cell = this->gameManager->map->cells[row][col];
             if (cell->resolving == true)
             {
-                cell->SetColor(GemColor::Vacant);
+                ResolveWithAnim(cell, animDuration);
                 totalResolved++;
             }
-            cell->resolving = false;
         }
     }
     return totalResolved;
+}
+
+void SolveWizard::ActionResolveEnds(Cell *cell)
+{
+    this->resolvingCount--;
+    cell->SetColor(GemColor::Vacant);
+    cell->resolving = false;
+    cell->setScale(1.0f);
+    cell->setOpacity(255.0f);
+}
+
+void SolveWizard::ResolveWithAnim(Cell *cell, const float animDuration)
+{
+    this->resolvingCount++;
+    auto *fadeOut = FadeOut::create(animDuration);
+    auto *scale = ScaleTo::create(animDuration, 0.25f);
+    auto actionResolveEnds = CallFunc::create(CC_CALLBACK_0(SolveWizard::ActionResolveEnds, this, cell));
+    Sequence *seq = Sequence::create(scale, actionResolveEnds, NULL);
+    cell->runAction(fadeOut);
+    cell->runAction(seq);
 }
 
 void SolveWizard::StartToFall(const DIRECTION dir)

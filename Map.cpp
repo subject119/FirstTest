@@ -153,7 +153,7 @@ void Map::Reset(const MapData &mapData)
 {
     InitializeMap(mapData);
     InitializeColor();
-    this->gameManager->solveWizard->AutoResolve();
+    this->gameManager->solveWizard->gameState = GameStates::Start;
 }
 
 void Map::ReadMapData(const MapData &mapData)
