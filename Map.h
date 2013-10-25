@@ -65,7 +65,7 @@ private:
     int height;
     int width;
 
-    unsigned long timer;
+    unsigned int timer;
 
     Cell* N1(const Cell &cell);
     Cell* N2(const Cell &cell);

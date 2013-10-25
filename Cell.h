@@ -27,26 +27,26 @@ class Cell : public cocos2d::Sprite
 public:
     virtual ~Cell() {}
 
-    void initialize(const int r, const int c, const CellType t);
+    void Initialize(const int r, const int c, const CellType t, const GemColor color);
 
     static Cell* createWithTexture(cocos2d::Texture2D *texture);
 
     void SetColor(const GemColor color);
     GemColor GetColor();
-
+    
     CellType type;
 
     int GetRow() const;
     int GetCol() const;
 
-    bool resolving;
+    int resolving;
     bool falling;
 
     static cocos2d::CCTexture2D* ChooseTextureByColor(const GemColor color);
     static GemColor RandomColor();
     static void CacheCellTexture();
 
-    unsigned long fallingTime;
+    unsigned int fallingTime;
 
 private:
     GemColor color;

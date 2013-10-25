@@ -51,7 +51,7 @@ void SolveWizard::update(float dt)
     case GameStates::Start:
         {
             this->gameManager->iOManager->setTouchEnabled(false);
-            if (this->Solve() == 0)
+            if (this->Resolve() == 0)
             {
                 this->gameManager->iOManager->setTouchEnabled(true);;
                 this->gameState = GameStates::WaitingForUserInput;
@@ -85,14 +85,23 @@ void SolveWizard::update(float dt)
     }
 }
 
-int SolveWizard::Solve()
+int SolveWizard::Resolve()
 {
+    this->resolvingCells.clear();
     MarkResolvableByDirection(DIRECTION::DIR2);
     MarkResolvableByDirection(DIRECTION::DIR3);
     MarkResolvableByDirection(DIRECTION::DIR4);
-    int resolved = Resolve();
+    Resolving();
+
+    // TODO: temp, simple, score calculating
+    int resolved = 0;
+    for (auto i : this->resolvingCells)
+    {
+        resolved += i.size();
+    }
     this->gameManager->scoreManager->AddToScore(resolved);
     this->gameManager->UIManager->SetScore(this->gameManager->scoreManager->GetScore());
+
     return resolved;
 }
 
@@ -100,7 +109,6 @@ bool SolveWizard::MarkResolvableByDirection(const DIRECTION dir)
 {
     std::vector<Cell*> heads;
     GenerateHeads(dir, heads);
-    bool marked = false;
 
     for (int i = 0; i < heads.size(); i++)
     {
@@ -118,10 +126,11 @@ bool SolveWizard::MarkResolvableByDirection(const DIRECTION dir)
             {
                 if (len > 2)
                 {
-                    marked = true;
+                    this->resolvingCells.push_back(std::vector<Cell *>());
                     while (begin->GetColor() != end->GetColor())
                     {
-                        begin->resolving = true;
+                        this->resolvingCells.back().push_back(begin);
+                        begin->resolving++;
                         begin = this->gameManager->map->Neighbor(*begin, dir);
                     }
                 }
@@ -131,44 +140,51 @@ bool SolveWizard::MarkResolvableByDirection(const DIRECTION dir)
         }
         if (len > 2)
         {
-            marked = true;
+            this->resolvingCells.push_back(std::vector<Cell *>());
             while (begin != NULL)
             {
-                begin->resolving = true;
+                this->resolvingCells.back().push_back(begin);
+                begin->resolving++;
                 begin = this->gameManager->map->Neighbor(*begin, dir);
             }
         }
     }
 
-    return marked;
+    return this->resolvingCells.size();
 }
 
-int SolveWizard::Resolve()
+void SolveWizard::Resolving()
 {
-    int totalResolved = 0;
-    int height = this->gameManager->map->GetHeight();
-    int width = this->gameManager->map->GetWidth();
     float animDuration = 0.15f;
-    for (int row = 0; row < height; row++)
+    for (auto i : this->resolvingCells)
     {
-        for (int col = 0; col < width; col++)
+        for (auto j : i)
         {
-            Cell* cell = this->gameManager->map->cells[row][col];
-            if (cell->resolving == true)
+            ResolveWithAnim(j, animDuration);
+
+            if (j->resolving == 2)
             {
-                ResolveWithAnim(cell, animDuration);
-                totalResolved++;
+                
+            }
+            if (j->resolving == 3)
+            {
+                
+            }
+            if (i.size() == 4)
+            {
+            }
+            if (i.size() == 5)
+            {
             }
         }
     }
-    return totalResolved;
 }
 
 void SolveWizard::ActionResolveEnds(Cell *cell)
 {
     this->resolvingCount--;
     cell->SetColor(GemColor::Vacant);
-    cell->resolving = false;
+    cell->resolving = 0;
     cell->setScale(1.0f);
     cell->setOpacity(255.0f);
 }
@@ -186,7 +202,7 @@ void SolveWizard::ResolveWithAnim(Cell *cell, const float animDuration)
 
 void SolveWizard::StartToFall(const DIRECTION dir)
 {
-    long fallingTime = this->gameManager->map->GetTimer();
+    unsigned int fallingTime = this->gameManager->map->GetTimer();
     for (int col = 0; col < this->gameManager->map->GetWidth(); col++)
     {
         int offset = 0; // offset == (newPos - pos) * height
@@ -248,6 +264,7 @@ bool SolveWizard::QuickTestSolvable()
         MarkResolvableByDirection(DIRECTION::DIR3) || 
         MarkResolvableByDirection(DIRECTION::DIR4);
     ClearResolvingFlags();
+    this->resolvingCells.clear();
     return resolved;
 }
 
@@ -259,7 +276,7 @@ void SolveWizard::ClearResolvingFlags()
     {
         for (int col = 0; col < width; col++)
         {
-            this->gameManager->map->cells[row][col]->resolving = false;
+            this->gameManager->map->cells[row][col]->resolving = 0;
         }
     }
 }

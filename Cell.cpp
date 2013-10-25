@@ -12,15 +12,17 @@ int Cell::GetCol() const
     return this->col;
 }
 
-void Cell::initialize(const int r, const int c, const CellType t)
+void Cell::Initialize(const int r, const int c, const CellType t, const GemColor color)
 {
     this->color = GemColor::Vacant;
-    this->resolving = false;
+    this->resolving = 0;
     this->falling = false;
     this->type = t;
     this->row = r;
     this->col = c;
-    this->fallingTime = 0.0;
+    this->fallingTime = 0;
+    this->color = color;
+    this->initWithTexture(ChooseTextureByColor(this->color));
 }
 
 Cell* Cell::createWithTexture(Texture2D *texture)
@@ -68,7 +70,7 @@ CCTexture2D* Cell::ChooseTextureByColor(const GemColor color)
         break;
     }
     std::string fullPath = FileUtils::getInstance()->fullPathForFilename(path);
-    return CCTextureCache::sharedTextureCache()->getTextureForKey(fullPath);
+    return CCTextureCache::getInstance()->getTextureForKey(fullPath);
 }
 
 GemColor Cell::RandomColor()

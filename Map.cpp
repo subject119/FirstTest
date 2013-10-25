@@ -204,11 +204,9 @@ void Map::InitializeMap(const MapData &mapData)
     {
         for (int col = 0; col < width; col++)
         {
-            cells[row][col] = Cell::createWithTexture(Cell::ChooseTextureByColor(GemColor::Vacant));
-            cells[row][col]->initialize(row, col, CellType::Inspace);
+            cells[row][col] = new Cell();
+            cells[row][col]->Initialize(row, col, CellType::Inspace, GemColor::Vacant);
             cells[row][col]->setPosition(*pos[row][col]);
-
-            // Don't forget to add Sprites to Layer, otherwise later app crashes when doing clean up
             this->addChild(cells[row][col]);
         }
     }
@@ -223,7 +221,6 @@ void Map::InitializeColor()
             if (cells[i][j]->type == CellType::Inspace)
             {
                 cells[i][j]->SetColor(Cell::RandomColor());
-                cells[i][j]->resolving = false;
             }
         }
     }

@@ -50,11 +50,13 @@ private:
 
     bool MarkResolvableByDirection(const DIRECTION dir);
 
-    int Solve();
+    void Resolving();
 
     void ClearResolvingFlags();
 
     void StartToFall(const DIRECTION dir);
+
+    std::vector<std::vector<Cell *>> resolvingCells;
 };
 
 #endif
