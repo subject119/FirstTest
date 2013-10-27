@@ -66,6 +66,7 @@ public:
 
     int resolving;
     bool falling;
+    bool exploded;
 
     static cocos2d::CCTexture2D* GetCellTexture(const GemColor color, const GemType);
     static GemColor RandomColor();

@@ -142,12 +142,14 @@ void SolveWizard::GenerateNewHighGem()
             {
                 cs->SetColorGemTypeDir(cs->GetColor(),  GemType::Cross2, DIRECTION::DIR1);
                 cs->resolving = 0;
+                cs->exploded = false;
             }
             // generate C3
             else if (cs->resolving == 3)
             {
                 cs->SetColorGemTypeDir(cs->GetColor(),  GemType::Cross3, DIRECTION::DIR1);
                 cs->resolving = 0;
+                cs->exploded = false;
             }
         }
 
@@ -168,6 +170,7 @@ void SolveWizard::GenerateNewHighGem()
         }
         cc->SetColorGemTypeDir(cc->GetColor(), tc, this->swapDir);
         cc->resolving = 0;
+        cc->exploded = false;
     }
 }
 

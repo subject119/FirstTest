@@ -50,26 +50,31 @@ void Cell::Explode(){
         {
             this->map->MarkResolvingInDirection(this, this->highDir);
             this->map->MarkResolvingInDirection(this, Map::OppositeDirection(this->highDir));
+            this->exploded = true;
         }
         break;
     case GemType::Straight5:
         {
             this->SetColorGemTypeDir(this->color, GemType::Normal, DIRECTION::DIR1);
+            this->exploded = true;
         }
         break;
     case GemType::Cross2:
         {
-            this->SetColorGemTypeDir(this->color, GemType::Normal, DIRECTION::DIR1);
+            this->map->MarkResolvingSurrounding(this);
+            this->exploded = true;
         }
         break;
     case GemType::Cross3:
         {
             this->SetColorGemTypeDir(this->color, GemType::Normal, DIRECTION::DIR1);
+            this->exploded = true;
         }
         break;
     case GemType::Circle:
         {
             this->SetColorGemTypeDir(this->color, GemType::Normal, DIRECTION::DIR1);
+            this->exploded = true;
         }
         break;
     }
@@ -78,7 +83,6 @@ void Cell::Explode(){
 void Cell::Initialize(Map *map, const int r, const int c, const CellType t, const GemColor color)
 {
     this->map = map;
-    this->color = GemColor::Vacant;
     this->gemType = GemType::Normal;
     this->highDir = DIRECTION::DIR1;
     this->resolving = 0;
@@ -88,6 +92,7 @@ void Cell::Initialize(Map *map, const int r, const int c, const CellType t, cons
     this->col = c;
     this->fallingTime = 0;
     this->color = color;
+    this->exploded = false;
     this->initWithTexture(GetCellTexture(this->color, this->gemType));
 }
 

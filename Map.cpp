@@ -322,19 +322,39 @@ DIRECTION Map::OppositeDirection(DIRECTION dir)
     }
 }
 
-void Map::MarkResolvingInDirection(Cell* start, DIRECTION dir)
+void Map::MarkResolvingInDirection(Cell *start, DIRECTION dir)
 {
     Cell *next = Neighbor(*start, dir);
     while (next != NULL)
     {
-        if (next->GetGemType() != GemType::Normal)
-        {
+        if (!next->exploded && next->GetGemType() != GemType::Normal) 
             this->gameManager->solveWizard->explosiveHighGems.push(next);
-        }
-        if (next->resolving == 0)
-        {
-            next->resolving = 1;
-        }
+        if (next->resolving == 0) next->resolving = 1;
         next = Neighbor(*next, dir);
     }
+}
+
+void Map::MarkResolvingSurrounding(Cell *center)
+{
+    Cell *surroundings[6];
+    GetSurroundings(center, surroundings);
+    for (int i = 0; i < 6; i++)
+    {
+        if (surroundings[i] != NULL)
+        {
+            if (!surroundings[i]->exploded && surroundings[i]->GetGemType() != GemType::Normal) 
+                this->gameManager->solveWizard->explosiveHighGems.push(surroundings[i]);
+            if (surroundings[i]->resolving == 0) surroundings[i]->resolving = 1;
+        }
+    }
+}
+
+void Map::GetSurroundings(Cell *center, Cell *(&surroundings)[6])
+{
+    surroundings[0] = Neighbor(*center, DIRECTION::DIR1);
+    surroundings[1] = Neighbor(*center, DIRECTION::DIR2);
+    surroundings[2] = Neighbor(*center, DIRECTION::DIR3);
+    surroundings[3] = Neighbor(*center, DIRECTION::DIR4);
+    surroundings[4] = Neighbor(*center, DIRECTION::DIR5);
+    surroundings[5] = Neighbor(*center, DIRECTION::DIR6);
 }

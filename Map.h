@@ -53,7 +53,9 @@ public:
 
     static DIRECTION OppositeDirection(DIRECTION dir);
 
-    void MarkResolvingInDirection(Cell* start, DIRECTION dir);
+    void MarkResolvingInDirection(Cell *start, DIRECTION dir);
+    void MarkResolvingSurrounding(Cell *center);
+    void GetSurroundings(Cell *center, Cell *(&surroundings)[6]);
 
 private:
     int height;
