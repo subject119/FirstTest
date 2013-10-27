@@ -349,7 +349,7 @@ void Map::MarkResolvingSurrounding(Cell *center)
     }
 }
 
-void Map::GetSurroundings(Cell *center, Cell *(&surroundings)[6])
+void Map::GetSurroundings(const Cell *center, Cell *(&surroundings)[6])
 {
     surroundings[0] = Neighbor(*center, DIRECTION::DIR1);
     surroundings[1] = Neighbor(*center, DIRECTION::DIR2);
@@ -357,4 +357,23 @@ void Map::GetSurroundings(Cell *center, Cell *(&surroundings)[6])
     surroundings[3] = Neighbor(*center, DIRECTION::DIR4);
     surroundings[4] = Neighbor(*center, DIRECTION::DIR5);
     surroundings[5] = Neighbor(*center, DIRECTION::DIR6);
+}
+
+void Map::MarkResolvingColor(GemColor color)
+{
+    int height = this->gameManager->map->GetHeight();
+    int width = this->gameManager->map->GetWidth();
+    for (int row = 0; row < height; row++)
+    {
+        for (int col = 0; col < width; col++)
+        {
+            Cell *cell = this->cells[row][col];
+            if (cell->GetColor() == color)
+            {
+                if (!cell->exploded && cell->GetGemType() != GemType::Normal) 
+                    this->gameManager->solveWizard->explosiveHighGems.push(cell);
+                if (cell->resolving == 0) cell->resolving = 1;
+            }
+        }
+    }
 }

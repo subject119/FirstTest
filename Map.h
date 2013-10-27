@@ -55,7 +55,9 @@ public:
 
     void MarkResolvingInDirection(Cell *start, DIRECTION dir);
     void MarkResolvingSurrounding(Cell *center);
-    void GetSurroundings(Cell *center, Cell *(&surroundings)[6]);
+    void MarkResolvingColor(const GemColor color);
+
+    void GetSurroundings(const Cell *center, Cell *(&surroundings)[6]);
 
 private:
     int height;

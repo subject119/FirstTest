@@ -55,7 +55,7 @@ void Cell::Explode(){
         break;
     case GemType::Straight5:
         {
-            this->SetColorGemTypeDir(this->color, GemType::Normal, DIRECTION::DIR1);
+            this->map->MarkResolvingColor(RandomColor());
             this->exploded = true;
         }
         break;
