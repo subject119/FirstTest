@@ -50,8 +50,6 @@ void Cell::Explode(){
         {
             this->map->MarkResolvingInDirection(this, this->highDir);
             this->map->MarkResolvingInDirection(this, Map::OppositeDirection(this->highDir));
-            // don't change color
-            this->SetColorGemTypeDir(this->color, GemType::Normal, DIRECTION::DIR1);
         }
         break;
     case GemType::Straight5:

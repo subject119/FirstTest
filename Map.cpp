@@ -324,16 +324,17 @@ DIRECTION Map::OppositeDirection(DIRECTION dir)
 
 void Map::MarkResolvingInDirection(Cell* start, DIRECTION dir)
 {
-    while (start != NULL)
+    Cell *next = Neighbor(*start, dir);
+    while (next != NULL)
     {
-        if (start->GetGemType() != GemType::Normal)
+        if (next->GetGemType() != GemType::Normal)
         {
-            this->gameManager->solveWizard->explosiveHighGems.push(start);
+            this->gameManager->solveWizard->explosiveHighGems.push(next);
         }
-        if (start->resolving == 0)
+        if (next->resolving == 0)
         {
-            start->resolving = 1;
+            next->resolving = 1;
         }
-        start = Neighbor(*start, dir);
+        next = Neighbor(*next, dir);
     }
 }
