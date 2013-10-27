@@ -59,6 +59,8 @@ public:
 
     void GetSurroundings(const Cell *center, Cell *(&surroundings)[6]);
 
+    GemColor S5TargetColor;
+
 private:
     int height;
     int width;

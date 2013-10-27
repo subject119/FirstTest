@@ -55,7 +55,15 @@ void Cell::Explode(){
         break;
     case GemType::Straight5:
         {
-            this->map->MarkResolvingColor(RandomColor());
+            if (this->map->S5TargetColor != GemColor::Vacant)
+            {
+                this->map->MarkResolvingColor(this->map->S5TargetColor);
+                this->map->S5TargetColor = GemColor::Vacant;
+            }
+            else
+            {
+                this->map->MarkResolvingColor(RandomColor());
+            }
             this->exploded = true;
         }
         break;
@@ -125,6 +133,9 @@ CCTexture2D* Cell::GetCellTexture(const GemColor color, const GemType type)
     std::string path = "";
     switch (color)
     {
+    case GemColor::S5:
+        path = "s5.png";
+        break;
     case GemColor::Red:
         switch (type)
         {
@@ -133,9 +144,6 @@ CCTexture2D* Cell::GetCellTexture(const GemColor color, const GemType type)
             break;
         case GemType::Straight4:
             path = "rs4.png";
-            break;
-        case GemType::Straight5:
-            path = "s5.png";
             break;
         case GemType::Cross2:
             path = "rc2.png";
@@ -154,9 +162,6 @@ CCTexture2D* Cell::GetCellTexture(const GemColor color, const GemType type)
         case GemType::Straight4:
             path = "gs4.png";
             break;
-        case GemType::Straight5:
-            path = "s5.png";
-            break;
         case GemType::Cross2:
             path = "gc2.png";
             break;
@@ -173,9 +178,6 @@ CCTexture2D* Cell::GetCellTexture(const GemColor color, const GemType type)
             break;
         case GemType::Straight4:
             path = "bs4.png";
-            break;
-        case GemType::Straight5:
-            path = "s5.png";
             break;
         case GemType::Cross2:
             path = "bc2.png";
@@ -197,9 +199,6 @@ CCTexture2D* Cell::GetCellTexture(const GemColor color, const GemType type)
         case GemType::Straight4:
             path = "ps4.png";
             break;
-        case GemType::Straight5:
-            path = "s5.png";
-            break;
         case GemType::Cross2:
             path = "pc2.png";
             break;
@@ -217,9 +216,6 @@ CCTexture2D* Cell::GetCellTexture(const GemColor color, const GemType type)
         case GemType::Straight4:
             path = "os4.png";
             break;
-        case GemType::Straight5:
-            path = "s5.png";
-            break;
         case GemType::Cross2:
             path = "oc2.png";
             break;
@@ -236,9 +232,6 @@ CCTexture2D* Cell::GetCellTexture(const GemColor color, const GemType type)
             break;
         case GemType::Straight4:
             path = "ys4.png";
-            break;
-        case GemType::Straight5:
-            path = "s5.png";
             break;
         case GemType::Cross2:
             path = "yc2.png";

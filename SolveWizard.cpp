@@ -38,6 +38,12 @@ void SolveWizard::SolveBySwap(Cell &cellA, DIRECTION dir)
         // modify both color and type
         cellA.SetColorGemTypeDir(target->GetColor(), target->GetGemType(), target->GetDirection());
         target->SetColorGemTypeDir(tempColor, tempType, tempDir);
+
+        if (ExplodeNowBySwap(&cellA, target)) 
+        {
+            this->gameState = GameStates::ExplodingHighGems;
+            return;
+        }
         
         if (QuickTestSolvable())
         {
@@ -68,7 +74,7 @@ void SolveWizard::update(float dt)
             MarkStraights();
             if (this->resolvingCells.empty())
             {
-                this->gameManager->iOManager->setTouchEnabled(true);;
+                this->gameManager->iOManager->setTouchEnabled(true);
                 this->gameState = GameStates::WaitingForUserInput;
             }
             else
@@ -79,6 +85,7 @@ void SolveWizard::update(float dt)
         break;
     case GameStates::ExplodingHighGems:
         {
+            this->gameManager->iOManager->setTouchEnabled(false);
             if (this->explosiveHighGems.empty())
             {
                 this->gameState = GameStates::Resolving;
@@ -157,10 +164,6 @@ void SolveWizard::GenerateNewHighGem()
 
         GemType tc = GemType::Normal;
         Cell *cc = GetCause(straight);
-        // generate S4 type high gem
-        if (straight.gems.size() == 4) tc = GemType::Straight4;
-        if (straight.gems.size() == 5) tc = GemType::Straight5;
-
         // Don't forget setting direction for type Straight4
         // straight is not casued by user swapping, turn the first gem of the straight
         if (cc == NULL) 
@@ -168,7 +171,19 @@ void SolveWizard::GenerateNewHighGem()
             cc = straight.gems.front();
             cc->SetColorGemTypeDir(cc->GetColor(), tc, straight.direction);
         }
-        cc->SetColorGemTypeDir(cc->GetColor(), tc, this->swapDir);
+        // generate S4 type high gem
+        if (straight.gems.size() == 4) 
+        {    
+            tc = GemType::Straight4;
+            cc->SetColorGemTypeDir(cc->GetColor(), tc, this->swapDir);
+        }
+        if (straight.gems.size() == 5)
+        {
+            tc = GemType::Straight5;
+            // S5 has unique color
+            cc->SetColorGemTypeDir(GemColor::S5, tc, this->swapDir);
+        }
+        
         cc->resolving = 0;
         cc->exploded = false;
     }
@@ -239,6 +254,7 @@ void SolveWizard::ExplodeExplosiveHighGems()
 {
     while (!this->explosiveHighGems.empty()) 
     {
+        //assert(this->explosiveHighGems.front()->GetGemType() != GemType::Normal);
         this->explosiveHighGems.front()->Explode();
         this->explosiveHighGems.pop();
     }
@@ -436,4 +452,47 @@ void SolveWizard::GenerateHeads(const DIRECTION dir, std::vector<Cell*> &heads)
             break;
         }
     }
+}
+
+bool SolveWizard::ExplodeNowBySwap(Cell *cellA, Cell *cellB)
+{
+    switch (cellA->GetGemType())
+    {
+    case GemType::Straight5:
+        {
+            switch (cellB->GetGemType())
+            {
+            case GemType::Normal:
+                {
+                    if (!cellA->exploded)
+                    {
+                        this->explosiveHighGems.push(cellA);
+                        this->gameManager->map->S5TargetColor = cellB->GetColor();
+                        cellA->resolving++;
+                    }
+                }
+                break;
+            }
+        }
+        return true;
+    case GemType::Normal:
+        {
+            switch (cellB->GetGemType())
+            {
+            case GemType::Straight5:
+                {
+                    if (!cellB->exploded)
+                    {
+                        this->explosiveHighGems.push(cellB);
+                        this->gameManager->map->S5TargetColor = cellA->GetColor();
+                        cellB->resolving++;
+                    }
+                }
+                return true;
+            }
+        }
+        break;
+    }
+
+    return false;
 }

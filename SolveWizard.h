@@ -52,6 +52,8 @@ public:
 
     void GenerateNewHighGem();
 
+    bool ExplodeNowBySwap(Cell *cellA, Cell *cellB);
+
 private:
 
     void Resolve();

@@ -11,6 +11,8 @@ bool Map::init()
     {
         return false;
     }
+
+    this->S5TargetColor = GemColor::Vacant;
 }
 
 Cell* Map::Neighbor(const Cell &cell, const DIRECTION dir)
@@ -225,6 +227,8 @@ void Map::InitializeColor()
             }
         }
     }
+
+    cells[4][5]->SetColorGemTypeDir(GemColor::S5, GemType::Straight5, DIRECTION::DIR1);
 }
 
 int Map::GetHeight()
@@ -276,7 +280,7 @@ void Map::update(float dt)
     timer++;
 
     float V = 0.0;
-    float G = 0.05;
+    float G = 0.075;
 
     for (int i = 0; i < height; i++)
     {

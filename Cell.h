@@ -31,7 +31,8 @@ enum class GemColor : int8_t
     Blue = 3,
     Yellow = 4,
     Purple = 5,
-    Orange = 6
+    Orange = 6,
+    S5 = 7
 };
 
 enum class GemType : int8_t
