@@ -8,16 +8,6 @@
 class GameManager;
 class MapData;
 
-enum class DIRECTION : int8_t
-{
-    DIR1,
-    DIR2,
-    DIR3,
-    DIR4,
-    DIR5,
-    DIR6
-};
-
 class Map : public cocos2d::Layer
 {
 public:
@@ -60,6 +50,10 @@ public:
     void update(float dt);
 
     unsigned long GetTimer();
+
+    static DIRECTION OppositeDirection(DIRECTION dir);
+
+    void MarkResolvingInDirection(Cell* start, DIRECTION dir);
 
 private:
     int height;

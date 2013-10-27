@@ -205,7 +205,7 @@ void Map::InitializeMap(const MapData &mapData)
         for (int col = 0; col < width; col++)
         {
             cells[row][col] = new Cell();
-            cells[row][col]->Initialize(row, col, CellType::Inspace, GemColor::Vacant);
+            cells[row][col]->Initialize(this, row, col, CellType::Inspace, GemColor::Vacant);
             cells[row][col]->setPosition(*pos[row][col]);
             this->addChild(cells[row][col]);
         }
@@ -220,7 +220,8 @@ void Map::InitializeColor()
         {
             if (cells[i][j]->type == CellType::Inspace)
             {
-                cells[i][j]->SetColor(Cell::RandomColor());
+                // don't modify type
+                cells[i][j]->SetColorGemType(Cell::RandomColor(), cells[i][j]->GetGemType());
             }
         }
     }
@@ -301,4 +302,38 @@ void Map::update(float dt)
 unsigned long Map::GetTimer()
 {
     return this->timer;
+}
+
+DIRECTION Map::OppositeDirection(DIRECTION dir)
+{
+    switch (dir){
+    case DIRECTION::DIR1:
+        return DIRECTION::DIR4;
+    case DIRECTION::DIR2:
+        return DIRECTION::DIR5;
+    case DIRECTION::DIR3:
+        return DIRECTION::DIR6;
+    case DIRECTION::DIR4:
+        return DIRECTION::DIR1;
+    case DIRECTION::DIR5:
+        return DIRECTION::DIR2;
+    case DIRECTION::DIR6:
+        return DIRECTION::DIR3;
+    }
+}
+
+void Map::MarkResolvingInDirection(Cell* start, DIRECTION dir)
+{
+    while (start != NULL)
+    {
+        if (start->GetGemType() != GemType::Normal)
+        {
+            this->gameManager->solveWizard->explosiveHighGems.push(start);
+        }
+        if (start->resolving == 0)
+        {
+            start->resolving = 1;
+        }
+        start = Neighbor(*start, dir);
+    }
 }

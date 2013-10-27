@@ -11,8 +11,17 @@ class GameManager;
 enum class GameStates
 {
     Start,
+    ExplodingHighGems,
     Resolving,
     WaitingForUserInput
+};
+
+class Resolvable
+{
+public:
+    std::vector<Cell *> resolvable;
+    DIRECTION direction;
+    Cell *newGen;
 };
 
 class SolveWizard : public cocos2d::Node
@@ -24,7 +33,7 @@ public:
 
     CREATE_FUNC(SolveWizard);
 
-    void SolveBySwap(Cell &cellA, Cell &cellB);
+    void SolveBySwap(Cell &cellA, DIRECTION dir);
 
     bool QuickTestSolvable();
 
@@ -38,9 +47,15 @@ public:
 
     GameStates gameState;
 
+    Cell *swapCells[2];
+
+    std::queue<Cell *> explosiveHighGems;
+
+    void GenerateNewHighGem();
+
 private:
 
-    int Resolve();
+    void Resolve();
 
     void ResolveWithAnim(Cell *cell, const float animDuration);
 
@@ -50,13 +65,21 @@ private:
 
     bool MarkResolvableByDirection(const DIRECTION dir);
 
-    void Resolving();
+    void ExplodeExplosiveHighGems();
+
+    void ResolveGems();
 
     void ClearResolvingFlags();
 
     void StartToFall(const DIRECTION dir);
 
-    std::vector<std::vector<Cell *>> resolvingCells;
+    Cell* GetCause(Resolvable &straight);
+
+    void MarkStraights();
+
+    std::vector<Resolvable> resolvingCells;
+
+    DIRECTION swapDir;
 };
 
 #endif
