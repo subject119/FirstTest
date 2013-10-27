@@ -19,9 +19,8 @@ enum class GameStates
 class Resolvable
 {
 public:
-    std::vector<Cell *> resolvable;
+    std::vector<Cell *> gems;
     DIRECTION direction;
-    Cell *newGen;
 };
 
 class SolveWizard : public cocos2d::Node
@@ -67,7 +66,7 @@ private:
 
     void ExplodeExplosiveHighGems();
 
-    void ResolveGems();
+    int ResolveGems();
 
     void ClearResolvingFlags();
 

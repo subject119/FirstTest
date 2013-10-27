@@ -221,7 +221,7 @@ void Map::InitializeColor()
             if (cells[i][j]->type == CellType::Inspace)
             {
                 // don't modify type
-                cells[i][j]->SetColorGemType(Cell::RandomColor(), cells[i][j]->GetGemType());
+                cells[i][j]->SetColorGemTypeDir(Cell::RandomColor(), cells[i][j]->GetGemType(), cells[i][j]->GetDirection());
             }
         }
     }

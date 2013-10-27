@@ -51,28 +51,27 @@ void Cell::Explode(){
             this->map->MarkResolvingInDirection(this, this->highDir);
             this->map->MarkResolvingInDirection(this, Map::OppositeDirection(this->highDir));
             // don't change color
-            this->SetColorGemType(this->color, GemType::Normal);
-            this->SetDirection(DIRECTION::DIR1);
+            this->SetColorGemTypeDir(this->color, GemType::Normal, DIRECTION::DIR1);
         }
         break;
     case GemType::Straight5:
         {
-            this->SetColorGemType(this->color, GemType::Normal);
+            this->SetColorGemTypeDir(this->color, GemType::Normal, DIRECTION::DIR1);
         }
         break;
     case GemType::Cross2:
         {
-            this->SetColorGemType(this->color, GemType::Normal);
+            this->SetColorGemTypeDir(this->color, GemType::Normal, DIRECTION::DIR1);
         }
         break;
     case GemType::Cross3:
         {
-            this->SetColorGemType(this->color, GemType::Normal);
+            this->SetColorGemTypeDir(this->color, GemType::Normal, DIRECTION::DIR1);
         }
         break;
     case GemType::Circle:
         {
-            this->SetColorGemType(this->color, GemType::Normal);
+            this->SetColorGemTypeDir(this->color, GemType::Normal, DIRECTION::DIR1);
         }
         break;
     }
@@ -99,12 +98,13 @@ Cell* Cell::createWithTexture(Texture2D *texture)
     return (Cell*)Sprite::createWithTexture(texture);
 }
 
-void Cell::SetColorGemType(const GemColor color, const GemType type)
+void Cell::SetColorGemTypeDir(const GemColor color, const GemType type, const DIRECTION dir)
 {
     this->color = color;
     this->gemType = type;
     CCTexture2D *pTexture = GetCellTexture(this->color, this->gemType);
     this->setTexture(pTexture);
+    this->SetDirection(dir);
 }
 
 GemColor Cell::GetColor()

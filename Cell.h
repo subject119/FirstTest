@@ -53,10 +53,10 @@ public:
 
     static Cell* createWithTexture(cocos2d::Texture2D *texture);
 
-    void SetColorGemType(const GemColor color, const GemType type);
+    void SetColorGemTypeDir(const GemColor color, const GemType type, const DIRECTION dir);
     GemColor GetColor();
     GemType GetGemType();
-    void SetDirection(const DIRECTION dir);
+    
     DIRECTION GetDirection();
     
     CellType type;
@@ -81,6 +81,8 @@ private:
     int row;
     int col;
     Map *map;
+
+    void SetDirection(const DIRECTION dir);
 };
 
 #endif

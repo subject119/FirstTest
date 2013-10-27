@@ -34,9 +34,10 @@ void SolveWizard::SolveBySwap(Cell &cellA, DIRECTION dir)
         this->swapDir = dir;
         GemColor tempColor = cellA.GetColor();
         GemType tempType = cellA.GetGemType();
+        DIRECTION tempDir = cellA.GetDirection();
         // modify both color and type
-        cellA.SetColorGemType(target->GetColor(), target->GetGemType());
-        target->SetColorGemType(tempColor, tempType);
+        cellA.SetColorGemTypeDir(target->GetColor(), target->GetGemType(), target->GetDirection());
+        target->SetColorGemTypeDir(tempColor, tempType, tempDir);
         
         if (QuickTestSolvable())
         {
@@ -45,8 +46,8 @@ void SolveWizard::SolveBySwap(Cell &cellA, DIRECTION dir)
         else
         {
             // if swap doesn't have effect, swap cells back
-            target->SetColorGemType(cellA.GetColor(), cellA.GetGemType());
-            cellA.SetColorGemType(tempColor, tempType);
+            target->SetColorGemTypeDir(cellA.GetColor(), cellA.GetGemType(), cellA.GetDirection());
+            cellA.SetColorGemTypeDir(tempColor, tempType, tempDir);
         }
     }
     else
@@ -123,15 +124,9 @@ void SolveWizard::MarkStraights()
 void SolveWizard::Resolve()
 {
     GenerateNewHighGem();
-
-    ResolveGems();
+    int resolved = ResolveGems();
 
     // TODO, temp, update score
-    int resolved = 0;
-    for (auto i : this->resolvingCells)
-    {
-        resolved += i.resolvable.size();
-    }
     this->gameManager->scoreManager->AddToScore(resolved);
     this->gameManager->UIManager->SetScore(this->gameManager->scoreManager->GetScore());
 }
@@ -140,36 +135,39 @@ void SolveWizard::GenerateNewHighGem()
 {
     for (auto straight : this->resolvingCells)
     {
-        for (auto cs : straight.resolvable)
+        for (auto cs : straight.gems)
         {
             // generate C2
             if (cs->resolving == 2)
             {
-                cs->SetColorGemType(cs->GetColor(),  GemType::Cross2);
+                cs->SetColorGemTypeDir(cs->GetColor(),  GemType::Cross2, DIRECTION::DIR1);
                 cs->resolving = 0;
             }
             // generate C3
             else if (cs->resolving == 3)
             {
-                cs->SetColorGemType(cs->GetColor(),  GemType::Cross3);
+                cs->SetColorGemTypeDir(cs->GetColor(),  GemType::Cross3, DIRECTION::DIR1);
                 cs->resolving = 0;
             }
         }
 
-        if (straight.resolvable.size() < 4) continue;
+        if (straight.gems.size() < 4) continue;
 
         GemType tc = GemType::Normal;
         Cell *cc = GetCause(straight);
         // generate S4 type high gem
-        if (straight.resolvable.size() == 4) tc = GemType::Straight4;
-        if (straight.resolvable.size() == 5) tc = GemType::Straight5;
+        if (straight.gems.size() == 4) tc = GemType::Straight4;
+        if (straight.gems.size() == 5) tc = GemType::Straight5;
 
         // Don't forget setting direction for type Straight4
         // straight is not casued by user swapping, turn the first gem of the straight
-        if (cc == NULL) cc = straight.resolvable.front();
-        cc->SetColorGemType(cc->GetColor(), tc);
+        if (cc == NULL) 
+        {
+            cc = straight.gems.front();
+            cc->SetColorGemTypeDir(cc->GetColor(), tc, straight.direction);
+        }
+        cc->SetColorGemTypeDir(cc->GetColor(), tc, this->swapDir);
         cc->resolving = 0;
-        cc->SetDirection(this->swapDir);
     }
 }
 
@@ -199,7 +197,7 @@ bool SolveWizard::MarkResolvableByDirection(const DIRECTION dir)
                     this->resolvingCells.back().direction = dir;
                     while (begin->GetColor() != end->GetColor())
                     {
-                        this->resolvingCells.back().resolvable.push_back(begin);
+                        this->resolvingCells.back().gems.push_back(begin);
                         begin->resolving++;
                         if (begin->GetGemType() != GemType::Normal)
                         {
@@ -218,7 +216,7 @@ bool SolveWizard::MarkResolvableByDirection(const DIRECTION dir)
             this->resolvingCells.back().direction = dir;
             while (begin != NULL)
             {
-                this->resolvingCells.back().resolvable.push_back(begin);
+                this->resolvingCells.back().gems.push_back(begin);
                 begin->resolving++;
                 if (begin->GetGemType() != GemType::Normal)
                 {
@@ -244,11 +242,12 @@ void SolveWizard::ExplodeExplosiveHighGems()
 }
 
 // Resolve high/normal gem
-void SolveWizard::ResolveGems()
+int SolveWizard::ResolveGems()
 {
     float animDuration = 0.15f;
     int height = this->gameManager->map->GetHeight();
     int width = this->gameManager->map->GetWidth();
+    int resolved = 0;
 
     for (int row = 0; row < height; row++)
     {
@@ -258,22 +257,25 @@ void SolveWizard::ResolveGems()
             if (cell->resolving > 0)
             {
                 ResolveWithAnim(cell, animDuration);
+                resolved++;
             }
         }
     }
+
+    return resolved;
 }
 
 Cell* SolveWizard::GetCause(Resolvable &straight)
 {
-    auto cell = std::find(straight.resolvable.begin(), straight.resolvable.end(), this->swapCells[0]);
-    if (cell != straight.resolvable.end())
+    auto cell = std::find(straight.gems.begin(), straight.gems.end(), this->swapCells[0]);
+    if (cell != straight.gems.end())
     {
         return *cell;
     }
     else
     {
-        cell = std::find(straight.resolvable.begin(), straight.resolvable.end(), this->swapCells[1]);
-        if (cell != straight.resolvable.end())
+        cell = std::find(straight.gems.begin(), straight.gems.end(), this->swapCells[1]);
+        if (cell != straight.gems.end())
         {
             return *cell;
         }
@@ -286,7 +288,7 @@ void SolveWizard::ActionResolveEnds(Cell *cell)
 {
     this->resolvingCount--;
     // reset both color and type
-    cell->SetColorGemType(GemColor::Vacant, GemType::Normal);
+    cell->SetColorGemTypeDir(GemColor::Vacant, GemType::Normal, DIRECTION::DIR1);
     cell->resolving = 0;
     cell->setScale(1.0f);
     cell->setOpacity(255.0f);
@@ -330,8 +332,8 @@ void SolveWizard::StartToFall(const DIRECTION dir)
                 pos->setPosition(this->gameManager->map->GetCellOriginalPos(*newPos));
                 // 2. set cell pos' color to the cell newPos', newPos's to vacant
                 // change both color and type
-                pos->SetColorGemType(newPos->GetColor(), newPos->GetGemType());
-                newPos->SetColorGemType(GemColor::Vacant, GemType::Normal);
+                pos->SetColorGemTypeDir(newPos->GetColor(), newPos->GetGemType(), newPos->GetDirection());
+                newPos->SetColorGemTypeDir(GemColor::Vacant, GemType::Normal, DIRECTION::DIR1);
                 // 3. set pos as falling
                 pos->falling = true; 
                 pos->fallingTime = fallingTime;
@@ -352,7 +354,7 @@ void SolveWizard::StartToFall(const DIRECTION dir)
             // 1. move pos according to offset
             pos->setPosition(Map::CalcCellPositionByIndex(pos->GetRow() + offset, pos->GetCol()));
             // 2. assgin random color to pos
-            pos->SetColorGemType(Cell::RandomColor(), GemType::Normal);
+            pos->SetColorGemTypeDir(Cell::RandomColor(), GemType::Normal, DIRECTION::DIR1);
             // 3. set pos as falling
             pos->falling = true;
             pos->fallingTime = fallingTime;
