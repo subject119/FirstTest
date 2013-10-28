@@ -303,6 +303,7 @@ Cell* SolveWizard::GetCause(Resolvable &straight)
     return NULL;
 }
 
+// reset all gemss (including high gem) color, gemtype and direction
 void SolveWizard::ActionResolveEnds(Cell *cell)
 {
     this->resolvingCount--;
@@ -476,14 +477,31 @@ bool SolveWizard::ExplodeNowBySwap(Cell *cellA, Cell *cellB)
         return true;
     case GemType::Straight4:
         {
+            DIRECTION exploDir = higher->GetDirection();
             switch (lower->GetGemType())
             {
+                //S4S4
             case GemType::Straight4:
                 {
-                    this->explosiveHighGems.push(higher);
-                    higher->resolving++;
-                    this->explosiveHighGems.push(lower);
-                    lower->resolving++;
+                    Cell *source = this->swapCells[0];
+                    Cell *target = this->swapCells[1];
+                    source->SetColorGemTypeDir(source->GetColor(), GemType::Normal, DIRECTION::DIR1);
+                    target->SetColorGemTypeDir(target->GetColor(), GemType::S4S4, DIRECTION::DIR1);
+                    this->explosiveHighGems.push(target);
+                    source->resolving++;
+                    target->resolving++;
+                }
+                return true;
+                //S4C2
+            case GemType::Cross2:
+                {
+                    Cell *source = this->swapCells[0];
+                    Cell *target = this->swapCells[1];
+                    source->SetColorGemTypeDir(source->GetColor(), GemType::Normal, DIRECTION::DIR1);
+                    target->SetColorGemTypeDir(target->GetColor(), GemType::S4C2, exploDir);
+                    this->explosiveHighGems.push(target);
+                    source->resolving++;
+                    target->resolving++;
                 }
                 return true;
             }

@@ -228,8 +228,8 @@ void Map::InitializeColor()
         }
     }
 
-    cells[0][0]->SetColorGemTypeDir(GemColor::Blue, GemType::Straight4, DIRECTION::DIR1);
-    cells[0][1]->SetColorGemTypeDir(GemColor::Red, GemType::Straight4, DIRECTION::DIR1);
+    cells[0][0]->SetColorGemTypeDir(GemColor::Blue, GemType::Straight4, DIRECTION::DIR3);
+    cells[0][1]->SetColorGemTypeDir(GemColor::Red, GemType::Cross2, DIRECTION::DIR1);
 }
 
 int Map::GetHeight()
@@ -329,12 +329,40 @@ DIRECTION Map::OppositeDirection(DIRECTION dir)
 
 void Map::MarkResolvingInDirection(Cell *start, DIRECTION dir)
 {
+    if (start == NULL) return;
+
     Cell *next = Neighbor(*start, dir);
     while (next != NULL)
     {
         if (!next->exploded && next->GetGemType() != GemType::Normal) 
             this->gameManager->solveWizard->explosiveHighGems.push(next);
         if (next->resolving == 0) next->resolving = 1;
+        next = Neighbor(*next, dir);
+    }
+}
+
+void Map::MarkResolvingWideInDirection(Cell *start, DIRECTION dir)
+{
+    if (start == NULL) return;
+    
+    Cell *next = Neighbor(*start, dir);
+    Cell *surroundings[6];
+    while (next != NULL)
+    {
+        GetSurroundings(next, surroundings);
+        if (!next->exploded && next->GetGemType() != GemType::Normal) 
+            this->gameManager->solveWizard->explosiveHighGems.push(next);
+        if (next->resolving == 0) next->resolving = 1;
+        for (Cell *cell : surroundings)
+        {
+            if (cell != NULL)
+            {
+                if (!cell->exploded && cell->GetGemType() != GemType::Normal) 
+                    this->gameManager->solveWizard->explosiveHighGems.push(cell);
+                if (cell->resolving == 0) cell->resolving = 1;
+            }
+        }
+
         next = Neighbor(*next, dir);
     }
 }

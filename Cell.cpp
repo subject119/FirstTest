@@ -15,12 +15,12 @@ int Cell::GetCol() const
 
 DIRECTION Cell::GetDirection()
 {
-    return this->highDir;
+    return this->explodeDir;
 }
 
 void Cell::SetDirection(const DIRECTION dir)
 {
-    this->highDir = dir;
+    this->explodeDir = dir;
     switch (dir)
     {
     case DIRECTION::DIR1:
@@ -48,8 +48,8 @@ void Cell::Explode(){
     {
     case GemType::Straight4:
         {
-            this->map->MarkResolvingInDirection(this, this->highDir);
-            this->map->MarkResolvingInDirection(this, Map::OppositeDirection(this->highDir));
+            this->map->MarkResolvingInDirection(this, this->explodeDir);
+            this->map->MarkResolvingInDirection(this, Map::OppositeDirection(this->explodeDir));
             this->exploded = true;
         }
         break;
@@ -85,6 +85,24 @@ void Cell::Explode(){
             this->exploded = true;
         }
         break;
+    case GemType::S4S4:
+        {
+            this->map->MarkResolvingInDirection(this, DIRECTION::DIR1);
+            this->map->MarkResolvingInDirection(this, DIRECTION::DIR2);
+            this->map->MarkResolvingInDirection(this, DIRECTION::DIR3);
+            this->map->MarkResolvingInDirection(this, DIRECTION::DIR4);
+            this->map->MarkResolvingInDirection(this, DIRECTION::DIR5);
+            this->map->MarkResolvingInDirection(this, DIRECTION::DIR6);
+            this->exploded = true;
+        }
+        break;
+    case GemType::S4C2:
+        {
+            this->map->MarkResolvingWideInDirection(this, this->explodeDir);
+            this->map->MarkResolvingWideInDirection(this, Map::OppositeDirection(this->explodeDir));
+            this->exploded = true;
+        }
+        break;
     }
 }
 
@@ -92,7 +110,7 @@ void Cell::Initialize(Map *map, const int r, const int c, const CellType t, cons
 {
     this->map = map;
     this->gemType = GemType::Normal;
-    this->highDir = DIRECTION::DIR1;
+    this->explodeDir = DIRECTION::DIR1;
     this->resolving = 0;
     this->falling = false;
     this->type = t;
@@ -140,6 +158,8 @@ CCTexture2D* Cell::GetCellTexture(const GemColor color, const GemType type)
         switch (type)
         {
         case GemType::Normal:
+        case GemType::S4S4:
+        case GemType::S4C2:
             path = "r.png";
             break;
         case GemType::Straight4:
@@ -157,6 +177,8 @@ CCTexture2D* Cell::GetCellTexture(const GemColor color, const GemType type)
         switch (type)
         {
         case GemType::Normal:
+        case GemType::S4S4:
+        case GemType::S4C2:
             path = "g.png";
             break;
         case GemType::Straight4:
@@ -174,6 +196,8 @@ CCTexture2D* Cell::GetCellTexture(const GemColor color, const GemType type)
         switch (type)
         {
         case GemType::Normal:
+        case GemType::S4S4:
+        case GemType::S4C2:
             path = "b.png";
             break;
         case GemType::Straight4:
@@ -194,6 +218,8 @@ CCTexture2D* Cell::GetCellTexture(const GemColor color, const GemType type)
         switch (type)
         {
         case GemType::Normal:
+        case GemType::S4S4:
+        case GemType::S4C2:
             path = "p.png";
             break;
         case GemType::Straight4:
@@ -211,6 +237,8 @@ CCTexture2D* Cell::GetCellTexture(const GemColor color, const GemType type)
         switch (type)
         {
         case GemType::Normal:
+        case GemType::S4S4:
+        case GemType::S4C2:
             path = "o.png";
             break;
         case GemType::Straight4:
@@ -228,6 +256,8 @@ CCTexture2D* Cell::GetCellTexture(const GemColor color, const GemType type)
         switch (type)
         {
         case GemType::Normal:
+        case GemType::S4S4:
+        case GemType::S4C2:
             path = "y.png";
             break;
         case GemType::Straight4:

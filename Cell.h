@@ -42,7 +42,9 @@ enum class GemType : int8_t
     Cross3 = 2,
     Straight4 = 3,
     Straight5 = 4,
-    Circle = 5
+    Circle = 5,
+    S4S4 = 6,
+    S4C2 = 7
 };
 
 class Cell : public cocos2d::Sprite
@@ -77,7 +79,7 @@ public:
     unsigned int fallingTime;
 
 private:
-    DIRECTION highDir;
+    DIRECTION explodeDir;
     GemType gemType;
     GemColor color;
     int row;

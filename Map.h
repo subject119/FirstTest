@@ -54,6 +54,7 @@ public:
     static DIRECTION OppositeDirection(DIRECTION dir);
 
     void MarkResolvingInDirection(Cell *start, DIRECTION dir);
+    void MarkResolvingWideInDirection(Cell *start, DIRECTION dir);
     void MarkResolvingSurrounding(Cell *center);
     void MarkResolvingColor(const GemColor color);
 
