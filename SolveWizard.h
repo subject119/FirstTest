@@ -81,6 +81,9 @@ private:
     std::vector<Resolvable> resolvingCells;
 
     DIRECTION swapDir;
+
+    Cell* LowerGem(Cell *cellA, Cell *cellB);
+    Cell* HigherGem(Cell *cellA, Cell *cellB);
 };
 
 #endif

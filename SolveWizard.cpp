@@ -456,37 +456,34 @@ void SolveWizard::GenerateHeads(const DIRECTION dir, std::vector<Cell*> &heads)
 
 bool SolveWizard::ExplodeNowBySwap(Cell *cellA, Cell *cellB)
 {
-    switch (cellA->GetGemType())
+    Cell *higher = HigherGem(cellA, cellB);
+    Cell *lower = LowerGem(cellA, cellB);
+    switch (higher->GetGemType())
     {
     case GemType::Straight5:
         {
-            switch (cellB->GetGemType())
+            switch (lower->GetGemType())
             {
             case GemType::Normal:
                 {
-                    if (!cellA->exploded)
-                    {
-                        this->explosiveHighGems.push(cellA);
-                        this->gameManager->map->S5TargetColor = cellB->GetColor();
-                        cellA->resolving++;
-                    }
+                    this->explosiveHighGems.push(higher);
+                    this->gameManager->map->S5TargetColor = lower->GetColor();
+                    higher->resolving++;
                 }
                 break;
             }
         }
         return true;
-    case GemType::Normal:
+    case GemType::Straight4:
         {
-            switch (cellB->GetGemType())
+            switch (lower->GetGemType())
             {
-            case GemType::Straight5:
+            case GemType::Straight4:
                 {
-                    if (!cellB->exploded)
-                    {
-                        this->explosiveHighGems.push(cellB);
-                        this->gameManager->map->S5TargetColor = cellA->GetColor();
-                        cellB->resolving++;
-                    }
+                    this->explosiveHighGems.push(higher);
+                    higher->resolving++;
+                    this->explosiveHighGems.push(lower);
+                    lower->resolving++;
                 }
                 return true;
             }
@@ -495,4 +492,14 @@ bool SolveWizard::ExplodeNowBySwap(Cell *cellA, Cell *cellB)
     }
 
     return false;
+}
+
+Cell* SolveWizard::LowerGem(Cell *cellA, Cell *cellB)
+{
+    return cellA->GetGemType() < cellB->GetGemType() ? cellA : cellB;
+}
+
+Cell* SolveWizard::HigherGem(Cell *cellA, Cell *cellB)
+{
+    return cellA->GetGemType() >= cellB->GetGemType() ? cellA : cellB;
 }

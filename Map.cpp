@@ -228,7 +228,8 @@ void Map::InitializeColor()
         }
     }
 
-    cells[4][5]->SetColorGemTypeDir(GemColor::S5, GemType::Straight5, DIRECTION::DIR1);
+    cells[0][0]->SetColorGemTypeDir(GemColor::Blue, GemType::Straight4, DIRECTION::DIR1);
+    cells[0][1]->SetColorGemTypeDir(GemColor::Red, GemType::Straight4, DIRECTION::DIR1);
 }
 
 int Map::GetHeight()

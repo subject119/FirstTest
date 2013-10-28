@@ -37,12 +37,12 @@ enum class GemColor : int8_t
 
 enum class GemType : int8_t
 {
-    Normal,
-    Straight4,
-    Straight5,
-    Cross2,
-    Cross3,
-    Circle
+    Normal = 0,
+    Cross2 = 1,
+    Cross3 = 2,
+    Straight4 = 3,
+    Straight5 = 4,
+    Circle = 5
 };
 
 class Cell : public cocos2d::Sprite
